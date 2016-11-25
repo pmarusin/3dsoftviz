@@ -3,7 +3,7 @@
  */
 #include <easylogging++.h>
 #include "Leap/HandModule/HandPalm.h"
-
+const int TYPE_THUMB  = 0; /*< The thumb */
 const int TYPE_MIDDLE = 2; /*< The middle finger */
 const int TYPE_RING = 3; /*< The ring finger */
 const int BONE_COUNT = 4; /*< The ring finger */
@@ -34,18 +34,25 @@ void Leap::HandPalm::initStructure()
 			osg::ref_ptr<osg::Group> fingerBoneGroup = new osg::Group();
 
 			// vynechanie klbov a kosti zapestia stredneho prstu a prstennika
-			if ( i == TYPE_MIDDLE || i == TYPE_RING ) {
+            if ( i == TYPE_MIDDLE || i == TYPE_RING ) {
 				Joint* joint = new Joint( 1 , i, fingerJointGroup, this->colorSwitch );
-				for ( j = 0; j < BONE_COUNT-1; j++ ) {
+                for ( j = 0; j < BONE_COUNT-1; j++ ) {
 					HandBone* handBone = new HandBone( j, fingerBoneGroup );
 				}
 			}
 			else {
 				Joint* joint = new Joint( 0 , i, fingerJointGroup, this->colorSwitch );
 				// vygeneruje 4 kosti pre dany prst
-				for ( j = 0; j < BONE_COUNT; j++ ) {
-					HandBone* handBone = new HandBone( j, fingerBoneGroup );
-				}
+                // ak je to ale palec tak ma len 3 kosti
+                if ( i == TYPE_THUMB ) {
+                    for ( j = 0; j < BONE_COUNT-1; j++ ) {
+                        HandBone* handBone = new HandBone( j, fingerBoneGroup );
+                    }
+                }else{
+                    for ( j = 0; j < BONE_COUNT; j++ ) {
+                        HandBone* handBone = new HandBone( j, fingerBoneGroup );
+                    }
+                }
 			}
 			this->fingerGroup->insertChild( i, fingerJointGroup );
 
