@@ -11,7 +11,23 @@ namespace Leap {
 class HandBone : public HandNode
 {
 public:
+    /**
+     * Constructor of HandBone. Automatically adds itself to the given osg::Group, calls
+     * generateGeometry().
+     *
+     * @param type - Value representing bone's type (position in the finger).
+     * @param boneGroup - Group of bones representing a single finger.
+     */
 	HandBone( int type, osg::ref_ptr<osg::Group> boneGroup );
+
+
+    /**
+     * Method used in constructor to generate hierarchy of graph objects to visualize a single bone.
+     * Geode -> ShapeDrawable -> Sphere
+     *
+     * @param radius - Radius of cylinder drawable in geode.
+     * @param colorSwitch - Value representing colour of bone - not used in current implementation.
+     */
 	void generateGeometry( float radius, int colorSwitch );
 
 	Joint* nextJoint;

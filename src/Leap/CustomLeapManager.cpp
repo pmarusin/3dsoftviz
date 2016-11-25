@@ -4,13 +4,9 @@
 
 Leap::CustomLeapManager::CustomLeapManager( Vwr::CameraManipulator* cameraManipulator, Layout::LayoutThread* layout,
 		Vwr::CoreGraph* coreGraph , osg::ref_ptr<osg::Group> handsGroup )
+    :cameraManipulator(cameraManipulator), layout(layout), coreGraph(coreGraph), handsGroup(handsGroup)
 {
-	this->cameraManipulator = cameraManipulator;
-	this->layout = layout;
-	this->coreGraph = coreGraph;
-	this->handsGroup = handsGroup;
-	arMode = false;
-
+    arMode = false;
 	//init handPalms here
 	if ( this->handsGroup != NULL ) {
 		arMode = true;
