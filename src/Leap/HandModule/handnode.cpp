@@ -13,8 +13,14 @@ void Leap::HandNode::generateGeometry( float radius, int colorSwitch ) {}
 
 void Leap::HandNode::setColor( int colorSwitch, osg::ref_ptr<osg::ShapeDrawable> handDrawable )
 {
-    osg::Vec4f blue = osg::Vec4f( 21.0/255.0,51.0/255.0,252.0/255.0,1.0 );
-    osg::Vec4f green = osg::Vec4f( 23.0/255.0,190.0/255.0,40.0/255.0,1.0 );
+    osg::Vec4f blue = osg::Vec4f( static_cast<osg::Vec4f::value_type>(21.0/255.0),
+                                  static_cast<osg::Vec4f::value_type>(51.0/255.0),
+                                  static_cast<osg::Vec4f::value_type>(252.0/255.0),
+                                  static_cast<osg::Vec4f::value_type>(1.0) );
+    osg::Vec4f green = osg::Vec4f( static_cast<osg::Vec4f::value_type>(23.0/255.0),
+                                   static_cast<osg::Vec4f::value_type>(190.0/255.0),
+                                   static_cast<osg::Vec4f::value_type>(40.0/255.0),
+                                   static_cast<osg::Vec4f::value_type>(1.0) );
 
 	// setting color
 	switch ( colorSwitch ) {
