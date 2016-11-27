@@ -10,30 +10,30 @@ class Joint : public HandNode
 {
 public:
 
-    /**
-     * Constructor of joint. Automatically adds itself to the given osg::Group, calls
-     * initStructure() and generateGeometry().
-     *
-     * @param level - Value representing joint's position in the finger.
-     * @param position - Value representing the finger of joint (eg. middle, ring).
-     * @param fingerJointGroup - Group of joints representing a single finger.
-     * @param colorSwitch - Value representing colour of joint (differs between hands)
-     */
+	/**
+	 * Constructor of joint. Automatically adds itself to the given osg::Group, calls
+	 * initStructure() and generateGeometry().
+	 *
+	 * @param level - Value representing joint's position in the finger.
+	 * @param position - Value representing the finger of joint (eg. middle, ring).
+	 * @param fingerJointGroup - Group of joints representing a single finger.
+	 * @param colorSwitch - Value representing colour of joint (differs between hands)
+	 */
 	Joint( int level, int position, osg::ref_ptr<osg::Group> fingerJointGroup, int colorSwitch );
 
-    /**
-     * Method used in constructor to generate hierarchy of joints.
-     * Creates another Joint and saves it as nextJoint
-     */
+	/**
+	 * Method used in constructor to generate hierarchy of joints.
+	 * Creates another Joint and saves it as nextJoint
+	 */
 	void initStructure();
 
-    /**
-     * Method used in constructor to generate hierarchy of graph objects to visualize a single joint.
-     * Geode -> ShapeDrawable -> Sphere
-     *
-     * @param radius - Radius of sphere drawable in geode.
-     * @param colorSwitch - Value representing colour of joint.
-     */
+	/**
+	 * Method used in constructor to generate hierarchy of graph objects to visualize a single joint.
+	 * Geode -> ShapeDrawable -> Sphere
+	 *
+	 * @param radius - Radius of sphere drawable in geode.
+	 * @param colorSwitch - Value representing colour of joint.
+	 */
 	void generateGeometry( float radius, int colorSwitch );
 
 	int colorSwitch;
@@ -41,9 +41,9 @@ public:
 	osg::ref_ptr<osg::Group> fingerJointGroup;
 private:
 
-    // 0-3 Value representing joint's position in the finger.
+	// 0-3 Value representing joint's position in the finger.
 	int level;
-    // 0-5 Value representing the finger of joint (eg. middle, ring).
+	// 0-5 Value representing the finger of joint (eg. middle, ring).
 	int position;
 };
 }

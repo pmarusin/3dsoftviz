@@ -4,8 +4,11 @@
 #include "Leap/HandModule/HandBone.h"
 #include <easylogging++.h>
 
+#include "osg/Geode"
+#include "osg/ShapeDrawable"
+
 Leap::HandBone::HandBone( int type, osg::ref_ptr<osg::Group> boneGroup )
-    :type(type), boneGroup(boneGroup)
+	: boneGroup( boneGroup ), type( type )
 {
 
 	this->generateGeometry( CYLINDER_RADIUS, 0 );

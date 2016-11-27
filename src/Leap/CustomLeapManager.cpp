@@ -1,20 +1,27 @@
 #include "Leap/CustomLeapManager.h"
+
+#include "Viewer/CameraManipulator.h"
+#include "Viewer/CoreGraph.h"
+#include "Layout/LayoutThread.h"
+#include "Layout/FRAlgorithm.h"
+#include "HandModule/HandPalm.h"
+
 #include <easylogging++.h>
 #include <math.h>
 
 Leap::CustomLeapManager::CustomLeapManager( Vwr::CameraManipulator* cameraManipulator, Layout::LayoutThread* layout,
 		Vwr::CoreGraph* coreGraph , osg::ref_ptr<osg::Group> handsGroup )
-    :cameraManipulator(cameraManipulator), layout(layout), coreGraph(coreGraph), handsGroup(handsGroup)
+	:cameraManipulator( cameraManipulator ), layout( layout ), coreGraph( coreGraph ), handsGroup( handsGroup )
 {
-    arMode = false;
+	arMode = false;
 	//init handPalms here
-	if ( this->handsGroup != NULL ) {
+	if ( this->handsGroup != nullptr ) {
 		arMode = true;
 		HandPalm* rightPalm = new HandPalm( 0.1f, handsGroup, 1 );
 		HandPalm* leftPalm = new HandPalm( 0.1f, handsGroup, 2 );
 
-        rightPalm->setMatrix( osg::Matrix::translate( 0,0,0 ) );
-        leftPalm->setMatrix( osg::Matrix::translate( 0,0,0 ) );
+		rightPalm->setMatrix( osg::Matrix::translate( 0,0,0 ) );
+		leftPalm->setMatrix( osg::Matrix::translate( 0,0,0 ) );
 	}
 
 }
@@ -109,58 +116,58 @@ void Leap::CustomLeapManager::scaleNodes( bool scaleUp )
 
 void Leap::CustomLeapManager::updateHands( Leap::Hand leftHand, Leap::Hand rightHand )
 {
-    HandPalm* leftPalm = nullptr;
-    HandPalm* rightPalm = nullptr;
+	HandPalm* leftPalm = nullptr;
+	HandPalm* rightPalm = nullptr;
 
-    if ( this->handsGroup != NULL ) {
-        // update lavej ruky
-        if ( leftHand.isValid() ) {
-            Leap::Vector lVector = Leap::Vector( 0.0f,0.0f,0.0f );
-            //ziskanie pozicie dlane
-            lVector = leftHand.palmPosition();
-            //0 a 3 z dovodu ze v grupe je palmNode, fingerGroup, palmNode, fingerGroup
-            HandPalm* leftPalm = static_cast<HandPalm*>( handsGroup->getChild( 3 ) );
+	if ( this->handsGroup != NULL ) {
+		// update lavej ruky
+		if ( leftHand.isValid() ) {
+			Leap::Vector lVector = Leap::Vector( 0.0f,0.0f,0.0f );
+			//ziskanie pozicie dlane
+			lVector = leftHand.palmPosition();
+			//0 a 3 z dovodu ze v grupe je palmNode, fingerGroup, palmNode, fingerGroup
+			HandPalm* leftPalm = static_cast<HandPalm*>( handsGroup->getChild( 3 ) );
 
-            leftPalm->setMatrix(
-                osg::Matrix::translate( static_cast<double>( lVector.x )/100.0,
-                                        static_cast<double>( -lVector.z )/100.0,
-                                        static_cast<double>( lVector.y )/100.0 ) );
-            // update prstov lavej ruky
-            this->updateFingers( leftPalm, leftHand.fingers() );
-            // update kosti medzi prstamu
-            this->updateInterFingerBones( leftPalm->interFingerBoneGroup, leftHand.fingers() );
-        }
-        // update pravej ruky
-        if ( rightHand.isValid() ) {
-            Leap::Vector rVector = Leap::Vector( 0.0f,0.0f,0.0f );
-            //ziskanie pozicie dlane
-            rVector = rightHand.palmPosition();
-            //0 a 3 z dovodu ze v grupe je palmNode, fingerGroup, palmNode, fingerGroup
-            HandPalm* rightPalm = static_cast<HandPalm*>( handsGroup->getChild( 0 ) );
+			leftPalm->setMatrix(
+				osg::Matrix::translate( static_cast<double>( lVector.x )/100.0,
+										static_cast<double>( -lVector.z )/100.0,
+										static_cast<double>( lVector.y )/100.0 ) );
+			// update prstov lavej ruky
+			this->updateFingers( leftPalm, leftHand.fingers() );
+			// update kosti medzi prstamu
+			this->updateInterFingerBones( leftPalm->interFingerBoneGroup, leftHand.fingers() );
+		}
+		// update pravej ruky
+		if ( rightHand.isValid() ) {
+			Leap::Vector rVector = Leap::Vector( 0.0f,0.0f,0.0f );
+			//ziskanie pozicie dlane
+			rVector = rightHand.palmPosition();
+			//0 a 3 z dovodu ze v grupe je palmNode, fingerGroup, palmNode, fingerGroup
+			HandPalm* rightPalm = static_cast<HandPalm*>( handsGroup->getChild( 0 ) );
 
-            rightPalm->setMatrix(
-                osg::Matrix::translate( static_cast<double>( rVector.x )/100.0,
-                                        static_cast<double>( -rVector.z )/100.0,
-                                        static_cast<double>( rVector.y )/100.0 ) );
-        // update prstov pravej ruky
-        this->updateFingers( rightPalm, rightHand.fingers() );
-        // update kosti medzi prstamu
-        this->updateInterFingerBones( rightPalm->interFingerBoneGroup, rightHand.fingers() );
-        }
-    }
+			rightPalm->setMatrix(
+				osg::Matrix::translate( static_cast<double>( rVector.x )/100.0,
+										static_cast<double>( -rVector.z )/100.0,
+										static_cast<double>( rVector.y )/100.0 ) );
+			// update prstov pravej ruky
+			this->updateFingers( rightPalm, rightHand.fingers() );
+			// update kosti medzi prstamu
+			this->updateInterFingerBones( rightPalm->interFingerBoneGroup, rightHand.fingers() );
+		}
+	}
 }
 
 void Leap::CustomLeapManager::updateFingers( HandPalm* palm, Leap::FingerList fingers )
 {
 	int i = 0;
-    // update jointov vsetkych prstov
+	// update jointov vsetkych prstov
 	for ( i = 0; i < 5; i++ ) {
-		updateJoints( static_cast<osg::Group*>( palm->fingerGroup->getChild( i )->asGroup() ), fingers[i], i );
+		updateJoints( static_cast<osg::Group*>( palm->fingerGroup->getChild( static_cast<unsigned int>( i ) )->asGroup() ), fingers[i], i );
 	}
-    // update kosti vsetkych prstov
-    for ( i = 5; i < 10; i++ ) {
-        updateFingerBones( static_cast<osg::Group*>( palm->fingerGroup->getChild( i )->asGroup() ), fingers[i-5], i-5 );
-    }
+	// update kosti vsetkych prstov
+	for ( i = 5; i < 10; i++ ) {
+		updateFingerBones( static_cast<osg::Group*>( palm->fingerGroup->getChild( static_cast<unsigned int>( i ) )->asGroup() ), fingers[i-5], i-5 );
+	}
 }
 
 
@@ -180,7 +187,7 @@ void Leap::CustomLeapManager::updateJoints( osg::Group* fingerJointGroup, Leap::
 		}
 	}
 	// vykreslenie klbov prstov
-	int i = 0;
+	unsigned int i = 0;
 	for ( i= 0; i < 4; i++ ) {
 		Leap::Joint* joint = static_cast<Leap::Joint*>( fingerJointGroup->getChild( i ) );
 
@@ -200,21 +207,21 @@ void Leap::CustomLeapManager::updateFingerBones( osg::Group*  fingerBoneGroup, L
 {
 	unsigned int i = 0;
 	// ak ma prst 3 kosti (middle a  ring), tak je treba pouzit offset na data z leapu (leap 4 kosti, my 3)
-	int offset = 0;
-    if ( fingerPosition ==  2 || fingerPosition == 3 ) {
-            offset = 1;
+	unsigned int offset = 0;
+	if ( fingerPosition ==  2 || fingerPosition == 3 ) {
+		offset = 1;
 	}
 
-    for ( i = 0; i < fingerBoneGroup->getNumChildren(); i++ ) {
+	for ( i = 0; i < fingerBoneGroup->getNumChildren(); i++ ) {
 
 		Leap::Vector posVector = Leap::Vector( 0.0f,0.0f,0.0f );
 		Leap::Vector dirVector = Leap::Vector( 0.0f,0.0f,0.0f );
 
 
 		if ( fingerLeap.bone( static_cast<Leap::Bone::Type>( i + offset ) ).isValid() ) {
-            float length;
-            Leap::HandBone* bone = static_cast<Leap::HandBone*>( fingerBoneGroup->getChild( i ) );
-            // ziskanie dat z Leap senzoru
+			float length;
+			Leap::HandBone* bone = static_cast<Leap::HandBone*>( fingerBoneGroup->getChild( i ) );
+			// ziskanie dat z Leap senzoru
 			posVector = fingerLeap.bone( static_cast<Leap::Bone::Type>( i + offset ) ).center();
 			dirVector = fingerLeap.bone( static_cast<Leap::Bone::Type>( i + offset ) ).direction();
 			length = fingerLeap.bone( static_cast<Leap::Bone::Type>( i + offset ) ).length();
@@ -227,18 +234,18 @@ void Leap::CustomLeapManager::updateFingerBones( osg::Group*  fingerBoneGroup, L
 								 static_cast<double>( -posVector.z )/100.0,
 								 static_cast<double>( posVector.y )/100.0 ) );
 
-            // rotation of bone
-            if(dirVector.x != 0 || dirVector.y !=0 || dirVector.z !=0){
-                boneMatrix->preMult( osg::Matrix::rotate( osg::Vec3f( 0.0f,0.0f,1.0f ) ,
-                                     osg::Vec3f( static_cast<osg::Vec3f::value_type>( dirVector.x/100.0f ),
-                                                 static_cast<osg::Vec3f::value_type>( -( dirVector.z/100.0f ) ) ,
-                                                 static_cast<osg::Vec3f::value_type>( dirVector.y/100.0f ) ) ) );
-            }
-            // scaling of bone
-            boneMatrix->preMult( osg::Matrix::scale( 1.0,1.0,( length/100.0 )/bone->HEIGHT ) );
+			// rotation of bone
+			if ( dirVector.x != 0 || dirVector.y !=0 || dirVector.z !=0 ) {
+				boneMatrix->preMult( osg::Matrix::rotate( osg::Vec3f( 0.0f,0.0f,1.0f ) ,
+									 osg::Vec3f( static_cast<osg::Vec3f::value_type>( dirVector.x/100.0f ),
+												 static_cast<osg::Vec3f::value_type>( -( dirVector.z/100.0f ) ) ,
+												 static_cast<osg::Vec3f::value_type>( dirVector.y/100.0f ) ) ) );
+			}
+			// scaling of bone
+			boneMatrix->preMult( osg::Matrix::scale( 1.0,1.0,( static_cast<double>( length )/100.0 )/static_cast<double>( bone->HEIGHT ) ) );
 
 			bone->setMatrix( *boneMatrix );
-        }
+		}
 
 	}
 }
@@ -246,55 +253,55 @@ void Leap::CustomLeapManager::updateFingerBones( osg::Group*  fingerBoneGroup, L
 void Leap::CustomLeapManager::updateInterFingerBones( osg::Group*  interFingerBoneGroup, Leap::FingerList fingers )
 {
 	int i;
-    Leap::Vector arrayOfJoints [4];
+	Leap::Vector arrayOfJoints [4];
 
 	// update kosti v zapasti
 	this->updateInterFingerWristBone( interFingerBoneGroup, fingers );
 
 	// inicializuju sa pozocie klbov medzi prstami
 	for ( i = 1; i < 5; i++ ) {
-        arrayOfJoints[i-1] = fingers[i].bone( static_cast<Leap::Bone::Type>( 0 ) ).nextJoint();
+		arrayOfJoints[i-1] = fingers[i].bone( static_cast<Leap::Bone::Type>( 0 ) ).nextJoint();
 	}
 
 	// ziskanie pozicii kosti medzi prstami
-    Leap::Vector arrayOfInterFingerBonesPositions [3];
+	Leap::Vector arrayOfInterFingerBonesPositions [3];
 	for ( i = 0; i < 3; i++ ) {
-        arrayOfInterFingerBonesPositions[i] = ( arrayOfJoints[i] + arrayOfJoints[i+1] ) / 2;
+		arrayOfInterFingerBonesPositions[i] = ( arrayOfJoints[i] + arrayOfJoints[i+1] ) / 2;
 	}
 
 	// ziskanie smeru kosti medzi prstami
-    Leap::Vector arrayOfInterFingerBonesRotations [3];
+	Leap::Vector arrayOfInterFingerBonesRotations [3];
 	for ( i = 0; i < 3; i++ ) {
-       arrayOfInterFingerBonesRotations[i] = ( arrayOfJoints[i+1] - arrayOfJoints[i] );
-    }
+		arrayOfInterFingerBonesRotations[i] = ( arrayOfJoints[i+1] - arrayOfJoints[i] );
+	}
 
 	// ziskanie dlzky kosti medzi prstami
-    float arrayOfInterFingerBonesLengths [3];
+	float arrayOfInterFingerBonesLengths [3];
 	for ( i = 0; i < 3; i++ ) {
-        arrayOfInterFingerBonesLengths[i] = sqrt( pow( ( arrayOfJoints[i+1].x - arrayOfJoints[i].x ),2 ) + pow( ( arrayOfJoints[i+1].y - arrayOfJoints[i].y ),2 )+ pow( ( arrayOfJoints[i+1].z - arrayOfJoints[i].z ),2 ) );
+		arrayOfInterFingerBonesLengths[i] = sqrtf( powf( ( arrayOfJoints[i+1].x - arrayOfJoints[i].x ),2 ) + powf( ( arrayOfJoints[i+1].y - arrayOfJoints[i].y ),2 )+ powf( ( arrayOfJoints[i+1].z - arrayOfJoints[i].z ),2 ) );
 
 	}
 
 	for ( i = 0; i < 3; i++ ) {
-		Leap::HandBone* bone = static_cast<Leap::HandBone*>( interFingerBoneGroup->getChild( i ) );
+		Leap::HandBone* bone = static_cast<Leap::HandBone*>( interFingerBoneGroup->getChild( static_cast<unsigned int>( i ) ) );
 
 		osg::RefMatrixd* boneMatrix = new osg::RefMatrixd();
 		boneMatrix->makeIdentity();
 
 		// position of bone
-        boneMatrix->preMult( osg::Matrix::translate( static_cast<double>( arrayOfInterFingerBonesPositions[i].x )/100.0,
-                             static_cast<double>( - arrayOfInterFingerBonesPositions[i].z )/100.0,
-                             static_cast<double>( arrayOfInterFingerBonesPositions[i].y )/100.0 ) );
+		boneMatrix->preMult( osg::Matrix::translate( static_cast<double>( arrayOfInterFingerBonesPositions[i].x )/100.0,
+							 static_cast<double>( - arrayOfInterFingerBonesPositions[i].z )/100.0,
+							 static_cast<double>( arrayOfInterFingerBonesPositions[i].y )/100.0 ) );
 
 		// rotation of bone
-        if(arrayOfInterFingerBonesRotations[i].x != 0 || arrayOfInterFingerBonesRotations[i].y !=0 || arrayOfInterFingerBonesRotations[i].z !=0){
-            boneMatrix->preMult( osg::Matrix::rotate( osg::Vec3f( 0.0f,0.0f,1.0f ) ,
-                                 osg::Vec3f( static_cast<osg::Vec3f::value_type>( arrayOfInterFingerBonesRotations[i].x/100.0 ),
-                                             static_cast<osg::Vec3f::value_type>( -( arrayOfInterFingerBonesRotations[i].z/100.0 ) ) ,
-                                             static_cast<osg::Vec3f::value_type>( arrayOfInterFingerBonesRotations[i].y/100.0 ) ) ) );
-        }
+		if ( arrayOfInterFingerBonesRotations[i].x != 0 || arrayOfInterFingerBonesRotations[i].y !=0 || arrayOfInterFingerBonesRotations[i].z !=0 ) {
+			boneMatrix->preMult( osg::Matrix::rotate( osg::Vec3f( 0.0f,0.0f,1.0f ) ,
+								 osg::Vec3f( arrayOfInterFingerBonesRotations[i].x/100.0f ,
+											 -( arrayOfInterFingerBonesRotations[i].z/100.0f ) ,
+											 arrayOfInterFingerBonesRotations[i].y/100.0f ) ) );
+		}
 		// scaling of bone
-        boneMatrix->preMult( osg::Matrix::scale( 1.0,1.0,( arrayOfInterFingerBonesLengths[i]/100.0 )/bone->HEIGHT ) );
+		boneMatrix->preMult( osg::Matrix::scale( 1.0,1.0,( static_cast<double>( arrayOfInterFingerBonesLengths[i] )/100.0 )/static_cast<double>( bone->HEIGHT ) ) );
 
 		bone->setMatrix( *boneMatrix );
 
@@ -309,8 +316,8 @@ void Leap::CustomLeapManager::updateInterFingerWristBone( osg::Group*  interFing
 	Leap::Vector boneDirection;
 	float boneLength;
 
-    // 4-ta kost v interFingerBoneGroup
-    Leap::HandBone* bone = static_cast<Leap::HandBone*>( interFingerBoneGroup->getChild( 3 ) );
+	// 4-ta kost v interFingerBoneGroup
+	Leap::HandBone* bone = static_cast<Leap::HandBone*>( interFingerBoneGroup->getChild( 3 ) );
 
 	//ukazovak, najspodnejsia kost
 	positionOfInnerJoint = fingers[1].bone( static_cast<Leap::Bone::Type>( 0 ) ).prevJoint();
@@ -322,10 +329,10 @@ void Leap::CustomLeapManager::updateInterFingerWristBone( osg::Group*  interFing
 
 	boneDirection = ( positionOfInnerJoint - positionOfOuterJoint );
 
-	boneLength = sqrt( pow( ( positionOfInnerJoint.x - positionOfOuterJoint.x ),2 )
-					   + pow( ( positionOfInnerJoint.y - positionOfOuterJoint.y ),2 )
-					   + pow( ( positionOfInnerJoint.z - positionOfOuterJoint.z ),2 ) );
-    boneLength = static_cast<float>(( boneLength/100.0 )/bone->HEIGHT);
+	boneLength = sqrtf( powf( ( positionOfInnerJoint.x - positionOfOuterJoint.x ),2 )
+						+ powf( ( positionOfInnerJoint.y - positionOfOuterJoint.y ),2 )
+						+ powf( ( positionOfInnerJoint.z - positionOfOuterJoint.z ),2 ) );
+	boneLength = ( boneLength/100.0f ) /bone->HEIGHT;
 
 
 	osg::RefMatrixd* boneMatrix = new osg::RefMatrixd();
@@ -337,14 +344,14 @@ void Leap::CustomLeapManager::updateInterFingerWristBone( osg::Group*  interFing
 						 static_cast<double>( bonePosition.y )/100.0 ) );
 
 	// rotation of bone
-    if(boneDirection.x != 0 || boneDirection.y !=0 || boneDirection.z !=0){
-        boneMatrix->preMult( osg::Matrix::rotate( osg::Vec3f( 0.0f,0.0f,1.0f ) ,
-                             osg::Vec3f( static_cast<osg::Vec3f::value_type>( boneDirection.x/100.0 ),
-                                         static_cast<osg::Vec3f::value_type>( -( boneDirection.z/100.0 ) ) ,
-                                         static_cast<osg::Vec3f::value_type>( boneDirection.y/100.0 ) ) ) );
-    }
+	if ( boneDirection.x != 0 || boneDirection.y !=0 || boneDirection.z !=0 ) {
+		boneMatrix->preMult( osg::Matrix::rotate( osg::Vec3f( 0.0f,0.0f,1.0f ) ,
+							 osg::Vec3f( boneDirection.x/100.0f ,
+										 -( boneDirection.z/100.0f ) ,
+										 boneDirection.y/100.0f ) ) );
+	}
 	// scaling of bone
-	boneMatrix->preMult( osg::Matrix::scale( 1.0,1.0,boneLength ) );
+	boneMatrix->preMult( osg::Matrix::scale( 1.0,1.0,static_cast<double>( boneLength ) ) );
 
 	bone->setMatrix( *boneMatrix );
 
