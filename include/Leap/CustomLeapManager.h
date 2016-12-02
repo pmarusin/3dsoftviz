@@ -91,9 +91,11 @@ public:
 	Layout::LayoutThread* layout;
 	Vwr::CoreGraph* coreGraph;
 
-	osg::ref_ptr<osg::Group> handsGroup;
-
-
+	osg::ref_ptr<osg::Group> handsGroup;  
+    osg::Vec3d eye;
+    osg::Vec3d center;
+    osg::Vec3d up;
+    osg::Vec3d direction;
 };
 }
 #endif
