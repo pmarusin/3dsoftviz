@@ -712,10 +712,13 @@ int CoreGraph::updateBackground( int bgVal, Data::Graph* currentGraph )
 		else if ( bgVal == 2 ) {
 			root->addChild( createTextureBackground() );
 		}
-		else if ( bgVal == 3 ) {
+        else if ( bgVal == 4 ) {
 			root->addChild( createOrtho2dBackground() );
 		}
 #endif
+        else if ( bgVal == 3 ) {
+            root->addChild( createLeapBackground() ); // leap
+        }
 		else if ( bgVal == -1 ) {
 			SkyBox* skyBox = new SkyBox;
 			root->addChild( skyBox->createSkyBox( -1 ) ); // black skybox
