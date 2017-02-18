@@ -145,14 +145,14 @@ set( CMAKE_AUTOMOC ON )
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
 # Find Qt5
-find_package( Qt5Core QUIET )
-find_package( Qt5Widgets QUIET )
-find_package( Qt5OpenGL QUIET )
-find_package( Qt5Sql QUIET )
-find_package( Qt5WebEngine QUIET )
-find_package( Qt5WebEngineWidgets QUIET )
-find_package( Qt5Xml QUIET )
-find_package( Qt5Network QUIET )
+#find_package( Qt5Core QUIET )
+#find_package( Qt5Widgets QUIET )
+#find_package( Qt5OpenGL QUIET )
+#find_package( Qt5Sql QUIET )
+#find_package( Qt5WebEngine QUIET )
+#find_package( Qt5WebEngineWidgets QUIET )
+#find_package( Qt5Xml QUIET )
+#find_package( Qt5Network QUIET )
 
 if ( NOT Qt5Core_FOUND )
 	# Find Qt4

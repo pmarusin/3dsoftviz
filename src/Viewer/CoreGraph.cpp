@@ -1060,6 +1060,7 @@ osg::ref_ptr<osg::Node> CoreGraph::createBackground()
 	// skybox
 	int background = appConf->getValue( "Viewer.SkyBox.Noise" ).toInt();
 
+    LOG (INFO) << "CoreGraph::createBackground - Setting background: " + std::to_string(background);
 
 	if ( background == 0 ) {
 		SkyBox* skyBox = new SkyBox;
