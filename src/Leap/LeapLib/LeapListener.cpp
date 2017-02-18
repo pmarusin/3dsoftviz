@@ -1,7 +1,9 @@
 #include "LeapLib//LeapListener.h"
 #include "LeapLib/DirectionDetector.h"
 #include "LeapLib/FingerPositionDetector.h"
-
+#include "osg/Image"
+#include "osgDB/WriteFile"
+#include <stdio.h>
 Leap::LeapListener::LeapListener( LeapManager* leapManager )
 {
 	leapActions = new Leap::LeapActions( leapManager );
@@ -48,6 +50,25 @@ void Leap::LeapListener::onFrame( const Controller& controller )
 {
 //    LOG( INFO ) << "Leap/LeapLib/LeapListener onFrame()";
 	Frame frame = controller.frame();
+
+//   Resolution: 640x240
+    ImageList images = frame.images();
+    for(int i = 0; i < 2; i++){
+        Image image = images[i];
+//        LOG (INFO) << std::to_string(image.width()) + "x" + std::to_string(image.height());
+        const unsigned char* image_buffer = image.data();
+        osg::Image* bufferImage = new osg::Image;
+        bufferImage->setImage(image.width(), image.height(), 1, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, (unsigned char*)image_buffer, osg::Image::USE_NEW_DELETE);
+        const osgDB::Options* options ;
+        /*remove( "D:\\result.jpg" );*/
+        osgDB::writeImageFile(*bufferImage, "D:\\result.jpg", options);
+
+    }
+
+
+
+
+
 	HandList hands = frame.hands();
 	Leap::DirectionDetector::Direction direction;
 	//bool handExtended;
