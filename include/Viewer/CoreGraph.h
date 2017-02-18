@@ -14,6 +14,7 @@
 #include "Viewer/BrowserGroup.h"
 #include "Data/Edge.h"
 #include "Data/Node.h"
+#include "Leap/LeapLib/LeapCameraStream.h"
 
 #include "Data/Cluster.h"
 
@@ -130,6 +131,14 @@ public:
 		*  \return 0 - success, 1 - fail
 		*/
 	int updateBackground( int bgVal, Data::Graph* currentGraph );
+
+    /**
+        *  \fn public updateBackgroundStream
+        *  \brief updates background with data from leap sensor
+        *  \param image data - one frame(image) from leap sensor
+        *  \return 0 - success, 1 - fail
+        */
+    int updateBackgroundStream( unsigned char* buffer );
 
 	/**
 		*  \fn inline public  getCustomNodeList
@@ -261,6 +270,8 @@ public:
 	OpenCV::CameraStream* getCameraStream() const;
 #endif
 
+    Leap::LeapCameraStream* getLeapCameraStream() const;
+
 	//jurik
 	/**
 		*  \fn public  set shadow technique to shadowMap
@@ -297,6 +308,9 @@ public:
 	{
 		return handsGroup;
 	}
+
+    //JMA
+      osg::Vec3f getGrafRotTransVec();
 
 public slots:
 
@@ -472,6 +486,13 @@ private:
 		*/
 	osg::ref_ptr<osg::Node> createSkyNoiseBox();
 
+    /**
+        *  \fn private  createLeapBackground
+        *  \brief creates background from leap video
+        *  \return osg::ref_ptr node
+        */
+    osg::ref_ptr<osg::Node> CoreGraph::createLeapBackground();
+
 #ifdef OPENCV_FOUND
 	/**
 		*  \fn private  createTextureBackground
@@ -636,6 +657,7 @@ private:
 	osg::ref_ptr<OpenCV::CameraStream> mCameraStream;
 #endif
 
+    osg::ref_ptr<Leap::LeapCameraStream> leapCameraStream;
 	bool clustersOpacityAutomatic;
 	bool clustersOpacitySelected;
 	double clustersOpacity;
@@ -644,6 +666,7 @@ private:
 	osg::ref_ptr<osg::Group> clustersGroup;
 
 	CameraManipulator* cameraManipulator;
+
 
 	void updateClustersCoords();
 

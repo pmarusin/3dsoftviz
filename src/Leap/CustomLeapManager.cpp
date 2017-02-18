@@ -390,3 +390,9 @@ void Leap::CustomLeapManager::updateInterFingerWristBone( osg::Group*  interFing
     bone->setMatrix( *boneMatrix );
 
 }
+
+int Leap::CustomLeapManager::updateCoreGraphBackground( const unsigned char* buffer ) {
+    this->coreGraph->updateBackgroundStream((unsigned char*)buffer);
+    return 1;
+}
+

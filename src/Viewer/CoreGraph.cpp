@@ -8,6 +8,7 @@
 #include "Viewer/SkyTransform.h"
 #include "Viewer/TextureWrapper.h"
 #include "Viewer/DataHelper.h"
+#include "Leap/LeapLib/LeapCameraStream.h"
 
 #include <QDebug>
 #include <QMatrix4x4>
@@ -687,6 +688,7 @@ Vwr::CoreGraph::CoreGraph( Data::Graph* graph, osg::ref_ptr<osg::Camera> camera 
 
 	// backgroung this must be last Node in root !!!  ( because of ortho2d background)
 	// Gloger: disabled skybox- using solid background (see setClearColor in ViewerQT)
+    leapCameraStream = nullptr;
 	root->addChild( createBackground() );
 	backgroundPosition = 2;
 
@@ -728,6 +730,16 @@ int CoreGraph::updateBackground( int bgVal, Data::Graph* currentGraph )
 	}
 
 	return 1;
+}
+
+int CoreGraph::updateBackgroundStream( unsigned char* buffer ) {
+    LOG( INFO ) << "CoreGraph::updateBackgroundStream - updating background";
+    if (leapCameraStream != nullptr) {
+        leapCameraStream->updateBackgroundImage(buffer);
+    }
+    return 1;
+
+    // TODO onImages vyskusat pridat, uprava obrazkov z leapu cez shader correction?, returny success/fail
 }
 
 void CoreGraph::reload( Data::Graph* graph )
@@ -849,7 +861,82 @@ void CoreGraph::cleanUp()
 }
 
 
+osg::ref_ptr<osg::Node> CoreGraph::createLeapBackground()
+{
 
+    osg::ref_ptr<osg::Geode> GeodeHUD = new osg::Geode();
+
+    osg::ref_ptr<osg::Projection> ProjectionMatrixHUD = new osg::Projection;
+    osg::ref_ptr<osg::MatrixTransform> ModelViewMatrixHUD = new osg::MatrixTransform;
+
+    ModelViewMatrixHUD->setMatrix( osg::Matrix::identity() );
+    ModelViewMatrixHUD->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
+
+    ProjectionMatrixHUD->setMatrix( osg::Matrix::ortho2D( 0,640,0,480 ) );
+    ProjectionMatrixHUD->addChild( ModelViewMatrixHUD );
+    ModelViewMatrixHUD->addChild( GeodeHUD );
+
+
+    osg::Vec3Array* coordsHUD = new osg::Vec3Array;
+    coordsHUD->push_back( osg::Vec3( 0,    0, -1 ) );
+    coordsHUD->push_back( osg::Vec3( 640,    0, -1 ) );
+    coordsHUD->push_back( osg::Vec3( 640,  480, -1 ) );
+    coordsHUD->push_back( osg::Vec3( 0,  480, -1 ) );
+
+    osg::Vec2Array* texCoords = new osg::Vec2Array( 4 );
+    ( *texCoords )[0].set( 0.0f, 1.0f );
+    ( *texCoords )[1].set( 1.0f, 1.0f );
+    ( *texCoords )[2].set( 1.0f, 0.0f );
+    ( *texCoords )[3].set( 0.0f, 0.0f );
+
+    osg::Vec3Array* normalsHUD = new osg::Vec3Array;
+    normalsHUD->push_back( osg::Vec3( 0.0f, 0.0f, 1.0f ) );
+
+
+    osg::ref_ptr<osg::Geometry> GeomHUD = new osg::Geometry();
+    GeomHUD->addPrimitiveSet( new osg::DrawArrays( osg::PrimitiveSet::POLYGON,0,4 ) );
+    GeomHUD->setVertexArray( coordsHUD );
+    GeomHUD->setNormalArray( normalsHUD );
+    GeomHUD->setNormalBinding( osg::Geometry::BIND_OVERALL );
+    GeomHUD->setTexCoordArray( 0,texCoords );
+
+
+    leapCameraStream = new Leap::LeapCameraStream();
+    leapCameraStream->setDataVariance( osg::Object::DYNAMIC );
+
+    osg::ref_ptr<osg::Texture2D> textureHUD = new osg::Texture2D( leapCameraStream );
+    textureHUD->setDataVariance( osg::Object::DYNAMIC );
+    textureHUD->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR );
+    textureHUD->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+    textureHUD->setWrap( osg::Texture::WRAP_S, osg::Texture::CLAMP_TO_EDGE );
+    textureHUD->setWrap( osg::Texture::WRAP_T, osg::Texture::CLAMP_TO_EDGE );
+    textureHUD->setResizeNonPowerOfTwoHint( false );
+
+
+
+    osg::ref_ptr<osg::StateSet> statesetHUD = new osg::StateSet();
+    statesetHUD->setTextureAttributeAndModes( 0, textureHUD, osg::StateAttribute::ON );
+    statesetHUD->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
+    statesetHUD->setMode( GL_CULL_FACE, osg::StateAttribute::OFF );
+    statesetHUD->setMode( GL_BLEND,osg::StateAttribute::OFF );
+
+
+    osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+    depth->setFunction( osg::Depth::ALWAYS );
+    depth->setRange( 1, 1 );
+    statesetHUD->setAttributeAndModes( depth, osg::StateAttribute::ON );
+    statesetHUD->setRenderBinDetails( -1, "RenderBin" );
+
+
+    GeodeHUD->setStateSet( statesetHUD );
+    GeodeHUD->addDrawable( GeomHUD );
+
+    osg::ref_ptr<osg::ClearNode> clearNode = new osg::ClearNode;
+    clearNode->setRequiresClear( false );
+    clearNode->addChild( ProjectionMatrixHUD );
+
+    return clearNode;
+}
 
 #ifdef OPENCV_FOUND
 osg::ref_ptr<osg::Node> CoreGraph::createTextureBackground()
@@ -883,8 +970,8 @@ osg::ref_ptr<osg::Node> CoreGraph::createTextureBackground()
 
 
 	// texture
-	mCameraStream = new OpenCV::CameraStream( geom );
-	mCameraStream->setDataVariance( osg::Object::DYNAMIC );
+    mCameraStream = new OpenCV::CameraStream( geom );
+    mCameraStream->setDataVariance( osg::Object::DYNAMIC );
 
 	osg::ref_ptr<osg::Texture2D> skymap = new osg::Texture2D( mCameraStream );
 	skymap->setDataVariance( osg::Object::DYNAMIC );
@@ -968,8 +1055,8 @@ osg::ref_ptr<osg::Node> CoreGraph::createOrtho2dBackground()
 	GeomHUD->setTexCoordArray( 0,texCoords );
 
 
-	mCameraStream = new OpenCV::CameraStream();
-	mCameraStream->setDataVariance( osg::Object::DYNAMIC );
+    mCameraStream = new OpenCV::CameraStream();
+    mCameraStream->setDataVariance( osg::Object::DYNAMIC );
 
 	osg::ref_ptr<osg::Texture2D> textureHUD = new osg::Texture2D( mCameraStream );
 	textureHUD->setDataVariance( osg::Object::DYNAMIC );
@@ -1060,7 +1147,6 @@ osg::ref_ptr<osg::Node> CoreGraph::createBackground()
 	// skybox
 	int background = appConf->getValue( "Viewer.SkyBox.Noise" ).toInt();
 
-    LOG (INFO) << "CoreGraph::createBackground - Setting background: " + std::to_string(background);
 
 	if ( background == 0 ) {
 		SkyBox* skyBox = new SkyBox;
@@ -1072,14 +1158,18 @@ osg::ref_ptr<osg::Node> CoreGraph::createBackground()
 		return createSkyNoiseBox();
 	}
 
+    // video from leap in ortho2d
+    if ( background == 3 ) {
+        return createLeapBackground();
+    }
 #ifdef OPENCV_FOUND
 	// video backgroung as 3d rectangle
-	if ( background == 2 ) {
+    if ( background == 2 ) {
 		return createTextureBackground();
 	}
 
 	// video backgroung as rectangle in ortho2d
-	if ( background == 3 ) {
+    if ( background == 4 ) {
 		return createOrtho2dBackground();
 	}
 #endif
@@ -1334,6 +1424,7 @@ void CoreGraph::updateGraphRotByAruco( const osg::Quat quat )
 	computeGraphRotTransf();
 }
 
+
 void CoreGraph::updateGraphPosAndRotByAruco( const osg::Quat quat, osg::Vec3d pos )
 {
 	mRotAruco = quat;
@@ -1437,6 +1528,10 @@ OpenCV::CameraStream* CoreGraph::getCameraStream() const
 	return mCameraStream;
 }
 #endif
+
+Leap::LeapCameraStream* CoreGraph::getLeapCameraStream() const {
+    return leapCameraStream;
+}
 
 bool CoreGraph::cameraInsideCube( osg::Vec3d lowerPoint, osg::Vec3d upperPoint )
 {
@@ -1660,7 +1755,7 @@ void CoreGraph::scaleGraphToBase()
 		//translate to aruco center graph
 		osg::Matrixd positionMatrix = graphRotTransf->getMatrix();
 		positionMatrix.setTrans( centerGraph );
-		graphRotTransf->setMatrix( positionMatrix );
+        graphRotTransf->setMatrix( positionMatrix );
 
 		//scale aruco base
 		baseSize = static_cast<double>( getFurthestPosition( maxPosition,minPosition ) );
@@ -1836,7 +1931,7 @@ float CoreGraph::getFurthestPosition( osg::Vec3f max,osg::Vec3f min )
 
 void CoreGraph::setArucoRunning( bool isRunning )
 {
-	this->arucoRunning = isRunning;
+    this->arucoRunning = isRunning;
 }
 
 void CoreGraph::drawAxes()
@@ -1890,6 +1985,11 @@ void CoreGraph::drawAxes()
 	axesGeometry->addPrimitiveSet( axisZ );
 
 }
+
+//JMA
+osg::Vec3f CoreGraph::getGrafRotTransVec(){
+        return graphRotTransf->getMatrix().getTrans();
+    }
 
 //*****
 }

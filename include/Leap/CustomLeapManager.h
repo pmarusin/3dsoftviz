@@ -77,6 +77,9 @@ public:
 	 */
 	void updateInterFingerWristBone( osg::Group*  interFingerBoneGroup, Leap::FingerList fingers );
 
+    //berger
+    int updateCoreGraphBackground( const unsigned char* buffer );
+
 	//jurik
 	void graphRotateSwipe( int swipeDirection );
 	void scaleNodes( bool scaleUp );
