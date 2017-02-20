@@ -47,25 +47,40 @@ void Leap::LeapListener::onExit( const Controller& controller )
 {
 
 }
-
-void Leap::LeapListener::onFrame( const Controller& controller )
-{
-//    LOG( INFO ) << "Leap/LeapLib/LeapListener onFrame()";
-	Frame frame = controller.frame();
+void Leap::LeapListener::onImages(const Controller& controller){
 
 //   Resolution: 640x240
     ImageList images = controller.images();
 
     Image image = images[0];
-    if (image.data() != NULL) {
-        LOG( INFO ) << "Leap/LeapLib/LeapListener onFrame() NOT NULL ! :)";
-        const unsigned char* imageBuffer = image.data();
+    LOG( INFO ) << "Leap/LeapLib/LeapListener sirka:" + std::to_string(image.width()) ;
+    LOG( INFO ) << "Leap/LeapLib/LeapListener vyska:" + std::to_string(image.height()) ;
 
-        Leap::CustomLeapManager *manager = dynamic_cast<Leap::CustomLeapManager*> (this->leapActions->leapManager);
-        manager->updateCoreGraphBackground( imageBuffer );
+//    Image image2 = image.invalid();
+//    const unsigned char* imageBuffer2 = image2.data();
+
+    if (image.data() == NULL || std::strcmp ((const char*)image.data(), "\t") == 0 || !(image.isValid() || std::strcmp ((const char*)image.data()[0], "\003") == 0)) {
+        return;
     }
 
 
+    LOG( INFO ) << "Leap/LeapLib/LeapListener onFrame() NOT NULL ! :)";
+    LOG (INFO) << std::to_string(image.bytesPerPixel() * image.width() * image.height());
+    const unsigned char* imageBuffer = image.data();
+
+    if (image.width()==640 && image.height()==240 ){
+        Leap::CustomLeapManager *manager = dynamic_cast<Leap::CustomLeapManager*> (this->leapActions->leapManager);
+
+        manager->updateCoreGraphBackground(imageBuffer );
+    }
+
+
+
+}
+void Leap::LeapListener::onFrame( const Controller& controller )
+{
+//    LOG( INFO ) << "Leap/LeapLib/LeapListener onFrame()";
+    Frame frame = controller.frame();
 	HandList hands = frame.hands();
 	Leap::DirectionDetector::Direction direction;
 	//bool handExtended;

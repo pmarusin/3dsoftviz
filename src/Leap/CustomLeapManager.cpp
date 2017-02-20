@@ -164,15 +164,15 @@ void Leap::CustomLeapManager::updateHands( Leap::Hand leftHand, Leap::Hand right
             this->updateInterFingerBones( rightPalm->interFingerBoneGroup, rightHand.fingers() );
         }
 
-        LOG (INFO) << "direction "+ std::to_string(this->direction[0]) + " " +
-                std::to_string(this->direction[1]) + " " +
-                std::to_string(this->direction[2]);
-        LOG (INFO) << "eye "+ std::to_string(this->eye[0]) + " " +
-                std::to_string(this->eye[1]) + " " +
-                std::to_string(this->eye[2]);
-        LOG (INFO) << "center "+ std::to_string(this->center[0]) + " " +
-                std::to_string(this->center[1]) + " " +
-                std::to_string(this->center[2]);
+//        LOG (INFO) << "direction "+ std::to_string(this->direction[0]) + " " +
+//                std::to_string(this->direction[1]) + " " +
+//                std::to_string(this->direction[2]);
+//        LOG (INFO) << "eye "+ std::to_string(this->eye[0]) + " " +
+//                std::to_string(this->eye[1]) + " " +
+//                std::to_string(this->eye[2]);
+//        LOG (INFO) << "center "+ std::to_string(this->center[0]) + " " +
+//                std::to_string(this->center[1]) + " " +
+//                std::to_string(this->center[2]);
 
 
     }
