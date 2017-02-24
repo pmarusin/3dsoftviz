@@ -37,7 +37,7 @@ public:
 	void onDeviceChange( const Controller& );
 	void onServiceConnect( const Controller& );
 	void onServiceDisconnect( const Controller& );
-    void onImages(const Controller& controller);
+	void onImages( const Controller& controller );
 };
 }
 

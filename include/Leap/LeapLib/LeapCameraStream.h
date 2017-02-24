@@ -10,11 +10,13 @@ class LeapCameraStream : public osg::Image
 {
 
 public:
-    LeapCameraStream( );
-    ~LeapCameraStream();
+	LeapCameraStream( );
+	~LeapCameraStream();
 
 public:
-    void updateBackgroundImage( unsigned char* buffer );
+	void updateBackgroundImage( unsigned char* buffer );
+private:
+	unsigned char* default_buffer;
 };
 }
 #endif
