@@ -61,7 +61,7 @@ public:
 	 * @param finger - Leap representation of single finger (sensor output data).
 	 * @param fingerPosition - Value representing index of position of finger (from THUMB to PINKY)
 	 */
-	void updateFingerBones( osg::Group*  fingerGroup, Leap::Finger finger, int fingerPosition );
+    void updateFingerBones( osg::Group*  fingerGroup, Leap::Finger finger);
 
 	/**
 	Method used in updateHands(). Render bones between fingers. Call method updateInterFingerWristBone().
