@@ -14,6 +14,8 @@ public:
 
 public:
 	void updateBackgroundImage( unsigned char* buffer );
+private:
+	unsigned char* default_buffer;
 };
 }
 #endif
