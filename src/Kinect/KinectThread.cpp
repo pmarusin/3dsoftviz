@@ -5,6 +5,7 @@
 #include "Kinect/KinectHandTracker.h"
 #include "Kinect/KinectZoom.h"
 
+#include "easylogging++.h"
 #include "QDebug"
 #include <string>
 #include <time.h>
@@ -19,6 +20,7 @@ Kinect::KinectThread::KinectThread( QObject* parent ) : QThread( parent )
 	mSetImageEnable=true;
 	isZoomEnable=true;
 	isMarkerDetectEnable=false;
+	mPushImagesDirectly=true;
 
 	// timer setting
 	clickTimer = new QTimer();
@@ -100,6 +102,12 @@ void Kinect::KinectThread::setCaptureImage( bool set )
 {
 	qDebug() << "captureImage set to " << set;
 	captureImage = set;
+}
+
+void Kinect::KinectThread::setPushImagesDirectly( bool set )
+{
+	LOG( INFO ) << "Kinect::KinectThread::setPushImagesDirectly: " << set;
+	mPushImagesDirectly = set;
 }
 
 void Kinect::KinectThread::clickTimerTimeout()
@@ -354,10 +362,15 @@ void Kinect::KinectThread::run()
 				}
 			}
 			//}
-#endif
-			// resize, send a msleep for next frame
-			cv::resize( frame, frame,cv::Size( 320,240 ),0,0,cv::INTER_LINEAR );
-			emit pushImage( frame );
+#endif			
+			if ( mPushImagesDirectly == true ) {
+				// resize, send
+				cv::resize( frame, frame,cv::Size( 320,240 ),0,0,cv::INTER_LINEAR );
+				emit pushImage( frame );
+			} else {
+				emit pushImageToMarkerless( frame );
+			}
+			//msleep for next frame
 			msleep( 20 );
 		}
 	}

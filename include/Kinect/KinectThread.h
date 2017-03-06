@@ -65,6 +65,11 @@ signals:
 	 */
 	void pushImageToMarkerDetection( cv::Mat image );
 
+	/**
+	 * @brief send picture to MarkerlessTrackingThread
+	 * @param image from kinect
+	 */
+	void pushImageToMarkerless( cv::Mat image );
 
 	/**
 	 * @brief send picture for Kinect window
@@ -132,6 +137,12 @@ public slots:
 
 	void setCaptureImage( bool set );
 
+	/**
+	 * @brief setPushImagesDirectly
+	 * @param set true for kinect to push images directly to windows
+	 */
+	void setPushImagesDirectly( bool set );
+
 private:
 
 	bool captureImage;
@@ -176,6 +187,11 @@ private:
 	 * @brief speed for reaction
 	 */
 	double mSpeed;
+
+	/**
+	 * @brief indicated whether the thread should push images directly to windows
+	 */
+	bool mPushImagesDirectly;
 
 #ifdef OPENNI2_FOUND
 	/**

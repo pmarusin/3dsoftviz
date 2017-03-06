@@ -57,6 +57,13 @@ void QOpenCV::MarkerlessTrackingThread::run()
 	delete markerlessTracker;
 }
 
+void QOpenCV::MarkerlessTrackingThread::detectFromImage( cv::Mat image )
+{
+	OpenCV::MarkerlessTracker* markerlessTracker = new OpenCV::MarkerlessTracker();
+	markerlessTracker->track( image );
+	emit pushImage( image.clone() );
+}
+
 void QOpenCV::MarkerlessTrackingThread::setCancel( bool set )
 {
 	mCancel = set;

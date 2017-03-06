@@ -242,11 +242,23 @@ void OpenCV::OpenCVCore::createConnectionKinect()
 					  mThrAruco,
 					  SLOT( detectMarkerFromImage( cv::Mat ) ) );
 
+	//send image to markerless tracking
+	QObject::connect( mThrKinect,
+					  SIGNAL( pushImageToMarkerless( cv::Mat ) ),
+					  mThrMarkerless,
+					  SLOT( detectFromImage( cv::Mat ) ) );
+
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setKinectPushImagesDirectly( bool ) ),
+					  mThrKinect,
+					  SLOT( setPushImagesDirectly( bool ) ) );
+
 	//send augmented Image created in Kinect
 	QObject::connect( mThrAruco,
 					  SIGNAL( pushImageFromKinect( cv::Mat ) ),
 					  mOpencvWindow,
 					  SLOT( setLabel( cv::Mat ) ) );
+
 	QObject::connect( mOpencvWindow,
 					  SIGNAL( setKinectCaptureImage( bool ) ),
 					  mThrKinect,

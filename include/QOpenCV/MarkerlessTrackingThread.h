@@ -44,6 +44,12 @@ public slots:
 
 	/**
 	 * @author Autor: Lukas Hagara
+	 * @brief detect objects on the given image
+	 */
+	void detectFromImage( cv::Mat );
+
+	/**
+	 * @author Autor: Lukas Hagara
 	 * @brief setCancel Set member mCancel
 	 */
 	void setCancel( bool );

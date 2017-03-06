@@ -214,6 +214,12 @@ signals:
 	void setZoom( bool send );
 
 	/**
+	 * @brief set whether kinect should push images directly to window, true by default
+	 * @param set true to push or false to not push
+	 */
+	void setKinectPushImagesDirectly( bool set );
+
+	/**
 	 * @brief enable/disable marker detection from kinect camera
 	 * @param send true for start, false for stop
 	 */

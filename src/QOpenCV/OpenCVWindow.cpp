@@ -380,11 +380,17 @@ void QOpenCV::OpenCVWindow::onMarkerlessStartCancel( bool checked )
 		mMarkerlessPB->setText( tr( "Stop Markerless" ) );
 		emit setCapVideoMarkerless( OpenCV::CamSelectCore::getInstance()->selectCamera() );
 		emit startMarkerless();
+//		emit startKinect();
+//		emit setKinectPushImagesDirectly( false );
+//		emit sendImageKinect( true );
+
 		mMarkerlessPB->setEnabled( true );
 	}
 	else {
 		mMarkerlessPB->setEnabled( false );
 		emit stopMarkerless( true );
+//		emit sendImageKinect( false );
+//		emit setKinectPushImagesDirectly( true );
 	}
 }
 
