@@ -1561,16 +1561,16 @@ endif()
 
 # Install built in dependencies unless we are building an OSX Bundle
 if( USE_BUILTIN_DEPENDENCIES )
-	# Install all dependencies
+         #Install all dependencies
 	install( DIRECTORY ${DEP_BIN}/
-		DESTINATION ${INSTALL_DEPS}
+	        DESTINATION ${INSTALL_DEPS}
 		COMPONENT Dependencies
 		USE_SOURCE_PERMISSIONS
 		)
 endif()
 
 # Include QT libraries in Apple bundle and on Windows
-if( WIN32 OR APPLE AND OSX_BUNDLE )
+if(  WIN32 OR APPLE AND OSX_BUNDLE )
 	# On Apple plugins need to be bundled
 	if( APPLE AND OSX_BUNDLE )
 		# Install Qt Plugins
@@ -1642,6 +1642,25 @@ if( APPLE AND OSX_BUNDLE )
 	# OSX Specific resources
 	install( FILES "resources/${MACOSX_BUNDLE_ICON_FILE}" DESTINATION ${INSTALL_RES} )
 endif()
+if( OPENCV_FOUND )
+    set( BUNDLE_APP "\${CMAKE_INSTALL_PREFIX}/${3DSOFTVIZ_NAME}.app" )
+
+    # Override default install destinations into the bundle
+    set( INSTALL_BUNDLE . )
+    set( INSTALL_BIN	${3DSOFTVIZ_NAME}.app/Contents/MacOS )
+    set( INSTALL_DATA	${3DSOFTVIZ_NAME}.app/Contents/share/3DSOFTVIZ )
+    set( INSTALL_RES	${3DSOFTVIZ_NAME}.app/Contents/Resources )
+    set( INSTALL_DEPS	${3DSOFTVIZ_NAME}.app/Contents )
+    set( INSTALL_PLUGIN	${3DSOFTVIZ_NAME}.app/Contents/MacOS )
+    set( INSTALL_QTCONF	${3DSOFTVIZ_NAME}.app/Contents/Resources )
+    install( CODE "
+	    file( GLOB_RECURSE OPENCV_LIBS
+		    \"\${CMAKE_INSTALL_PREFIX}/${INSTALL_DEPS}/lib/opencv/*${CMAKE_SHARED_MODULE_SUFFIX}\" )
+	    include( BundleUtilities )
+	    copy_and_fixup_bundle( \"${OPENCV_LIB_DIR}\" \"${CMAKE_INSTALL_PREFIX}/opencv_lib\" )
+	    " COMPONENT Runtime )
+endif()
+
 
 # Windows specific overrides
 if( WIN32 )
@@ -1669,7 +1688,7 @@ endif()
 
 set( CPACK_MONOLITHIC_INSTALL 1 )
 set( CPACK_STRIP_FILES ON )
-set( CPACK_BINARY_DRAGNDROP ON )
+set( CPACK_BINARY_DRAGNDROP OFF )
 set( CPACK_PACKAGE_VERSION_MAJOR "${3DSOFTVIZ_VERSION_MAJOR}" )
 set( CPACK_PACKAGE_VERSION_MINOR "${3DSOFTVIZ_VERSION_MINOR}" )
 set( CPACK_PACKAGE_VERSION_PATCH "${3DSOFTVIZ_VERSION_PATCH}" )
