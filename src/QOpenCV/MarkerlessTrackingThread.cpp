@@ -8,6 +8,7 @@ QOpenCV::MarkerlessTrackingThread::MarkerlessTrackingThread()
 {
 	mCapVideo	= nullptr;
 	mCancel		= false;
+	OpenCV::MarkerlessTracker* markerlessTracker = new OpenCV::MarkerlessTracker();
 }
 
 QOpenCV::MarkerlessTrackingThread::~MarkerlessTrackingThread( void )
@@ -21,7 +22,7 @@ void QOpenCV::MarkerlessTrackingThread::run()
 	//initialization
 	mCancel = false;
 	cv::Mat image;
-	OpenCV::MarkerlessTracker* markerlessTracker = new OpenCV::MarkerlessTracker();
+
 
 	//no camera was set
 	if ( mCapVideo == NULL ) {
@@ -54,18 +55,18 @@ void QOpenCV::MarkerlessTrackingThread::run()
 	//cleanup
 	mCapVideo->release();
 	mCapVideo = NULL;
-	delete markerlessTracker;
+//	delete markerlessTracker;
 }
 
 void QOpenCV::MarkerlessTrackingThread::detectFromImage( cv::Mat image )
 {
-	OpenCV::MarkerlessTracker* markerlessTracker = new OpenCV::MarkerlessTracker();
 	markerlessTracker->track( image );
-	emit pushImage( image.clone() );
+	emit pushImage( image ); //image.clone()
 }
 
 void QOpenCV::MarkerlessTrackingThread::setCancel( bool set )
 {
+	LOG( INFO ) << "QOpenCV::MarkerlessTrackingThread::setCancel " << set;
 	mCancel = set;
 }
 

@@ -389,6 +389,8 @@ private:
 	QRadioButton*    mMarkerRB;
 	QRadioButton*    mMultiMarkerRB;
 	QRadioButton*	mMarkerlessRB;
+	QRadioButton*		mMarkerlessCamRB;
+	QRadioButton*		mMarkerlessKinRB;
 
 	QPushButton*     mFaceRecPB;
 	QPushButton*     mMarkerPB;

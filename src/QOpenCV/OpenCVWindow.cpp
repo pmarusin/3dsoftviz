@@ -53,6 +53,8 @@ void QOpenCV::OpenCVWindow::configureWindow()
 	mMarkerRB = new QRadioButton( tr( "Marker" ) );
 	mMultiMarkerRB = new QRadioButton( tr( "Multi Marker" ) );
 	mMarkerlessRB = new QRadioButton( tr( "Markerless" ) );
+	mMarkerlessCamRB = new QRadioButton( tr( "Camera" ) );
+	mMarkerlessKinRB = new QRadioButton( tr( "Kinect" ) );
 
 	mFaceRecPB = new QPushButton( tr( "Start Face Recognition" ) );
 	mMarkerPB = new QPushButton( tr( "Start Marker Detection" ) );
@@ -162,6 +164,9 @@ void QOpenCV::OpenCVWindow::configureWindow()
 	arucoMarkerPageLayout->addWidget( mInterchangeMarkersPB );
 	arucoMarkerPageLayout->addWidget( mMarkerPB );
 
+	//markerless layouts
+	markerlessPageLayout->addWidget( mMarkerlessCamRB );
+	markerlessPageLayout->addWidget( mMarkerlessKinRB );
 	markerlessPageLayout->addWidget( mMarkerlessPB );
 
 	//arucoMultiMarkerPageLayout->addWidget( mMultiMarkerPB );
@@ -375,23 +380,46 @@ void QOpenCV::OpenCVWindow::onFaceRecStartCancel( bool checked )
 
 void QOpenCV::OpenCVWindow::onMarkerlessStartCancel( bool checked )
 {
+
 	if ( checked ) {
+
 		mMarkerlessPB->setEnabled( false );
 		mMarkerlessPB->setText( tr( "Stop Markerless" ) );
-		emit setCapVideoMarkerless( OpenCV::CamSelectCore::getInstance()->selectCamera() );
-		emit startMarkerless();
-//		emit startKinect();
-//		emit setKinectPushImagesDirectly( false );
-//		emit sendImageKinect( true );
+
+		if ( mMarkerlessCamRB->isChecked() ) {
+			emit setCapVideoMarkerless( OpenCV::CamSelectCore::getInstance()->selectCamera() );
+			emit startMarkerless();
+		}
+		if ( mMarkerlessKinRB->isChecked() ) {
+			emit startKinect();
+			emit setKinectPushImagesDirectly( false );
+			emit sendImageKinect( true );
+		}
+		mMarkerlessCamRB->setDisabled( true );
+		mMarkerlessKinRB->setDisabled( true );
+
 
 		mMarkerlessPB->setEnabled( true );
 	}
 	else {
 		mMarkerlessPB->setEnabled( false );
+
+		if ( mMarkerlessCamRB->isChecked() ) {
+		}
+
+		if ( mMarkerlessKinRB->isChecked() ) {
+			emit stopKinect( true );
+			emit sendImageKinect( false );
+			emit setKinectPushImagesDirectly( true );
+			mMarkerlessPB->setText( tr( "Start Markerless" ) );
+		}
+		mMarkerlessCamRB->setDisabled( false );
+		mMarkerlessKinRB->setDisabled( false );
+		mMarkerlessPB->setEnabled( true );
+
 		emit stopMarkerless( true );
-//		emit sendImageKinect( false );
-//		emit setKinectPushImagesDirectly( true );
 	}
+
 }
 
 void QOpenCV::OpenCVWindow::onMarkerStartCancel( bool checked )

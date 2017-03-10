@@ -363,15 +363,18 @@ void Kinect::KinectThread::run()
 			}
 			//}
 #endif			
+			// resize, send
+			cv::resize( frame, frame,cv::Size( 320,240 ),0,0,cv::INTER_LINEAR );
 			if ( mPushImagesDirectly == true ) {
-				// resize, send
-				cv::resize( frame, frame,cv::Size( 320,240 ),0,0,cv::INTER_LINEAR );
+
 				emit pushImage( frame );
-			} else {
+			} else {	
 				emit pushImageToMarkerless( frame );
 			}
 			//msleep for next frame
 			msleep( 20 );
-		}
+
+		} else {msleep(500);}
+
 	}
 }

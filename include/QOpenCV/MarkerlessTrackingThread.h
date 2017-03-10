@@ -7,6 +7,7 @@
 
 namespace OpenCV {
 class CapVideo;
+class MarkerlessTracker;
 }
 
 namespace QOpenCV {
@@ -71,6 +72,8 @@ private:
 	 * @brief mCancel the thread loop variable
 	 */
 	bool				mCancel;
+
+	OpenCV::MarkerlessTracker* markerlessTracker;
 
 
 };
