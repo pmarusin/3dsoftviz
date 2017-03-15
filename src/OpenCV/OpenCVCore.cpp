@@ -235,7 +235,10 @@ void OpenCV::OpenCVCore::createConnectionKinect()
 					  SIGNAL( setKinectMarkerDetection( bool ) ),
 					  mThrKinect,
 					  SLOT( setImageSendToMarkerDetection( bool ) ) );
-
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setKinectMarkerlessDetection( bool ) ),
+					  mThrKinect,
+					  SLOT( setKinectMarkerlessDetection( bool ) ) );
 	//enable/disable sending picture to Marker Detection
 	QObject::connect( mThrKinect,
 					  SIGNAL( pushImageToMarkerDetection( cv::Mat ) ),

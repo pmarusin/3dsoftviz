@@ -74,6 +74,7 @@ void QOpenCV::OpenCVWindow::configureWindow()
 	mDisableCursorCB = new QCheckBox( tr( "Turn off cursor" ) );
 	mDisableZoomCursorCB = new QCheckBox( tr( "Turn off zoom" ) );
 	mEnableMarkerDetectCB = new QCheckBox( tr( "Turn on Marker Detection" ) );
+	mEnableMarkerlessDetectCB = new QCheckBox( tr( "Turn on Markerless Detection" ) );
 
 	mSpeed =  new QSlider( Qt::Vertical );
 	mSpeed->setRange( 5,20 );
@@ -144,9 +145,11 @@ void QOpenCV::OpenCVWindow::configureWindow()
 	markerlessPageWid->setLayout( markerlessPageLayout );
 
 	//set up page layouts
+	kinectPageLayout->addWidget( mEnableMarkerlessDetectCB );
 	kinectPageLayout->addWidget( mDisableCursorCB );
 	kinectPageLayout->addWidget( mDisableZoomCursorCB );
 	kinectPageLayout->addWidget( mEnableMarkerDetectCB );
+
 	kinectPageLayout->addWidget( mSpeed );
 	kinectPageLayout->addWidget( mKinectSnapshotPB );
 	kinectPageLayout->addWidget( mKinectPB );
@@ -191,6 +194,7 @@ void QOpenCV::OpenCVWindow::configureWindow()
 	mCorEnabledCB->setEnabled( false );
 	mMultiMarkerEnableCB->setEnabled( true );
 	mEnableMarkerDetectCB->setEnabled( true );
+	mEnableMarkerlessDetectCB->setEnabled( true );
 
 	mMultiMarkerPB->setCheckable( true );
 	mFaceRecPB->setCheckable( true );
@@ -218,8 +222,8 @@ void QOpenCV::OpenCVWindow::configureWindow()
 
 	connect( mMarkerBackgrCB, SIGNAL( clicked( bool ) ), this, SLOT( onMarkerBackgrCBClicked( bool ) ) );
 	connect( mFaceDetBackgrCB, SIGNAL( clicked( bool ) ), this, SLOT( onFaceDetBackgrCBClicked( bool ) ) );
-	connect( mEnableMarkerDetectCB, SIGNAL( clicked( bool ) ), this, SLOT( setMarkerDetection( bool ) ) );
-
+	connect( mEnableMarkerDetectCB, SIGNAL( clicked( bool ) ), this, SLOT( setMarkerlessDetection( bool ) ) );
+//	connect( mEnableMarkerlessDetectCB, SIGNAL( clicked( bool ) ), this, SLOT( setMarkerlessDetection( bool ) ) );
 	connect( mDisableCursorCB, SIGNAL( clicked() ), this, SLOT( stopMovingCursor() ) );
 	connect( mDisableZoomCursorCB, SIGNAL( clicked( bool ) ), this, SLOT( stopZoom() ) );
 }
@@ -247,6 +251,10 @@ void QOpenCV::OpenCVWindow::stopZoom()
 void QOpenCV::OpenCVWindow::setMarkerDetection( bool set )
 {
 	emit setKinectMarkerDetection( set );
+}
+void QOpenCV::OpenCVWindow::setMarkerlessDetection( bool set )
+{
+	emit setKinectMarkerlessDetection( set );
 }
 
 void QOpenCV::OpenCVWindow::setSpeedKinect( int speed )

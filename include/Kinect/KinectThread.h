@@ -17,6 +17,11 @@
 #include "Viewer/GraphNavigation.h"
 #include "Viewer/MouseControl.h"
 
+namespace OpenCV {
+class CapVideo;
+class MarkerlessTracker;
+}
+
 namespace Kinect {
 
 class KinectThread;
@@ -100,6 +105,12 @@ public slots:
 	void setImageSend( bool set );
 
 	/**
+	 * @brief function for start, stop tracking balls on video
+	 * @param set true for calculate and sending , false for pause
+	 */
+	void setMarkerlessDetection( bool set );
+
+	/**
 	 * @brief function for enable sending picture to Aruco thread for Marker Detection
 	 * @param set true for sending picture, false for pause
 	 */
@@ -152,6 +163,7 @@ private:
 	bool clickTimerFirstRun;
 	Vwr::GraphNavigation* nav;
 	Vwr::MouseControl* mouse;
+	OpenCV::MarkerlessTracker* kTracker;
 	// Marak end
 	/**
 	 * @brief information about status thread
@@ -177,6 +189,11 @@ private:
 	 * @brief isZoomEnable status of zoom
 	 */
 	bool isZoomEnable;
+
+	/**
+	 * @brief isMarkerlessDetectEnable status of markerless detection
+	 */
+	bool isMarkerlessDetectEnable;
 
 	/**
 	 * @brief isMarkerDetectEnable status of marker detection

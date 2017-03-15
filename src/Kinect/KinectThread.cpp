@@ -4,7 +4,7 @@
 #include "Kinect/KinectRecognition.h"
 #include "Kinect/KinectHandTracker.h"
 #include "Kinect/KinectZoom.h"
-
+#include "OpenCV/MarkerlessTracker.h"
 #include "easylogging++.h"
 #include "QDebug"
 #include <string>
@@ -21,7 +21,8 @@ Kinect::KinectThread::KinectThread( QObject* parent ) : QThread( parent )
 	isZoomEnable=true;
 	isMarkerDetectEnable=false;
 	mPushImagesDirectly=true;
-
+	isMarkerlessDetectEnable=false;
+	kTracker =  new OpenCV::MarkerlessTracker();
 	// timer setting
 	clickTimer = new QTimer();
 	connect( clickTimer ,SIGNAL( timeout() ), this, SLOT( clickTimerTimeout() ) );
@@ -73,6 +74,9 @@ void Kinect::KinectThread::setCancel( bool set )
 void Kinect::KinectThread::setImageSend( bool set )
 {
 	mSetImageEnable=set;
+}
+void Kinect::KinectThread::setMarkerlessDetection( bool set ){
+	isMarkerlessDetectEnable = set;
 }
 
 void Kinect::KinectThread::setImageSendToMarkerDetection( bool set )
@@ -366,7 +370,9 @@ void Kinect::KinectThread::run()
 			// resize, send
 			cv::resize( frame, frame,cv::Size( 320,240 ),0,0,cv::INTER_LINEAR );
 			if ( mPushImagesDirectly == true ) {
-
+				if (isMarkerlessDetectEnable ==true){
+					kTracker->track(frame);
+				}
 				emit pushImage( frame );
 			} else {	
 				emit pushImageToMarkerless( frame );

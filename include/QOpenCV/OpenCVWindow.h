@@ -224,6 +224,11 @@ signals:
 	 * @param send true for start, false for stop
 	 */
 	void setKinectMarkerDetection( bool send );
+	/**
+	 * @brief enable/disable markerless tracking from kinect camera
+	 * @param send true for start, false for stop
+	 */
+	void setKinectMarkerlessDetection( bool send );
 
 	/**
 	 * @brief change of speed movement for hand
@@ -365,6 +370,7 @@ private slots:
 	 * @param speed of movement
 	 */
 	void setMarkerDetection( bool set );
+	void setMarkerlessDetection( bool set );
 
 private:
 	/**
@@ -414,6 +420,7 @@ private:
 	QCheckBox*       mDisableCursorCB;
 	QCheckBox*       mDisableZoomCursorCB;
 	QCheckBox*       mEnableMarkerDetectCB;
+	QCheckBox*       mEnableMarkerlessDetectCB;
 
 	QSlider*         mSpeed;
 };
