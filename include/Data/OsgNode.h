@@ -557,7 +557,7 @@ protected:
 	     * bool mIsFocused
 	     * \brief Flag whether this node is focused at the moment.
 	     */
-	bool mIsFocused;
+    bool mIsFocused;
 
 };
 }
