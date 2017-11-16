@@ -506,7 +506,7 @@ if (NOT SKIP_DOXYGEN)
 	find_package(Doxygen)
 	option(BUILD_DOXYGEN_DOCUMENTATION "Create and install the HTML based API documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
-	if (BUILD_DOCUMENTATION)
+	if (BUILD_DOXYGEN_DOCUMENTATION)
 		if (NOT DOXYGEN_FOUND)
 			message(FATAL_ERROR "Doxygen is needed to build the documentation.")
 		endif ()
