@@ -28,8 +28,8 @@ set( 3DSOFTVIZ_DOMAIN "${3DSOFTVIZ_DOMAIN_FIRST}.${3DSOFTVIZ_DOMAIN_SECOND}" )
 # ------------------------------------------------------------
 # Additional CMake scripts
 set( CMAKE_MODULE_PATH
-	"${CMAKE_CURRENT_SOURCE_DIR}/cmake"
-	${CMAKE_MODULE_PATH} )
+		"${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+		${CMAKE_MODULE_PATH} )
 
 # Enable C++11 features
 set(CMAKE_CXX_STANDARD 11)
@@ -42,9 +42,9 @@ if( USE_STRICT_COMPILE_WARNINGS )
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
 		# using Clang
 		set( FLAGS_FOR_DEBUG
-			-Weverything
-			-Wno-c++98-compat -Wno-documentation -Wno-shadow -Wno-padded -Wno-covered-switch-default
-			-pedantic -Wall -Wcast-align -Wcast-qual -Wchar-subscripts -Wcomment -Wconversion -Wctor-dtor-privacy -Wdisabled-optimization -Wextra -Wfloat-equal  -Wformat  -Wformat-nonliteral -Wformat-security  -Wformat-y2k -Wformat=2  -Wimport  -Winit-self -Winline -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-declarations -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked  -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wsign-compare  -Wsign-promo -Wstack-protector -Wstrict-aliasing=2 -Wstrict-overflow=5 -Wswitch -Wswitch-default -Wswitch-enum -Wtrigraphs -Wundef -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings  -Wno-unused-parameter -Wno-unused -Wno-documentation-unknown-command )
+				-Weverything
+				-Wno-c++98-compat -Wno-documentation -Wno-shadow -Wno-padded -Wno-covered-switch-default
+				-pedantic -Wall -Wcast-align -Wcast-qual -Wchar-subscripts -Wcomment -Wconversion -Wctor-dtor-privacy -Wdisabled-optimization -Wextra -Wfloat-equal  -Wformat  -Wformat-nonliteral -Wformat-security  -Wformat-y2k -Wformat=2  -Wimport  -Winit-self -Winline -Winvalid-pch -Wlong-long -Wmissing-braces -Wmissing-declarations -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wpacked  -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wsign-compare  -Wsign-promo -Wstack-protector -Wstrict-aliasing=2 -Wstrict-overflow=5 -Wswitch -Wswitch-default -Wswitch-enum -Wtrigraphs -Wundef -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings  -Wno-unused-parameter -Wno-unused -Wno-documentation-unknown-command )
 	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR CMAKE_COMPILER_IS_GNUCXX)
 		# using GCC
 		set( FLAGS_FOR_DEBUG -pedantic -Wall -Wcast-align -Wcast-qual -Wchar-subscripts -Wcomment -Wconversion -Wctor-dtor-privacy -Wdisabled-optimization -Wextra -Wfloat-equal -Wformat -Wformat-nonliteral -Wformat-security -Wformat-y2k -Wformat=2 -Wimport -Winit-self -Winline -Winvalid-pch -Wlogical-op -Wlong-long -Wmissing-braces -Wmissing-declarations -Wmissing-field-initializers -Wmissing-format-attribute -Wmissing-include-dirs -Wmissing-noreturn -Wnoexcept -Wpacked -Wparentheses -Wpointer-arith -Wredundant-decls -Wreturn-type -Wsequence-point -Wsign-compare -Wsign-promo -Wstack-protector -Wstrict-aliasing=2 -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch -Wswitch-default -Wswitch-enum -Wtrigraphs -Wundef -Wuninitialized -Wunknown-pragmas -Wunreachable-code -Wunsafe-loop-optimizations -Wvariadic-macros -Wvolatile-register-var -Wwrite-strings -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -Wsign-conversion -Wno-unused-parameter -Wno-unused )
@@ -154,38 +154,38 @@ set( CMAKE_INCLUDE_CURRENT_DIR ON )
 option(USE_QT4_FORCED "Force using Qt4 packages." OFF)
 
 if (NOT USE_QT4_FORCED)
-    # Find Qt5
-    find_package(Qt5
+	# Find Qt5
+	find_package(Qt5
 			CONFIG COMPONENTS
-            Widgets Gui OpenGL Sql
+			Widgets Gui OpenGL Sql
 			WebEngine WebEngineWidgets
-            Xml Network
-            QUIET)
+			Xml Network
+			QUIET)
 endif ()
 
 # Find Qt4
 if (NOT Qt5Core_FOUND)
-    find_package(Qt4
+	find_package(Qt4
 			COMPONENTS
 			QtCore QtGui QtOpenGL QtSql
 			QtWebKit QtXml QtNetwork
 			REQUIRED)
-    set(QT_USE_QTOPENGL 1)
-    set(QT_USE_QTSQL 1)
-    set(QT_USE_QTWEBKIT 1)
-    set(QT_USE_QTXML 1)
-    set(QT_USE_QTNETWORK 1)
-    include(${QT_USE_FILE})
+	set(QT_USE_QTOPENGL 1)
+	set(QT_USE_QTSQL 1)
+	set(QT_USE_QTWEBKIT 1)
+	set(QT_USE_QTXML 1)
+	set(QT_USE_QTNETWORK 1)
+	include(${QT_USE_FILE})
 endif ()
 
 if (USE_QT4_FORCED)
-    message("Forced using Qt4 packages (deprecated)")
+	message("Forced using Qt4 packages (deprecated)")
 elseif (Qt5Core_FOUND)
-    message(STATUS "Using Qt5 packages")
+	message(STATUS "Using Qt5 packages")
 elseif (Qt4_FOUND)
-    message(STATUS "Using Qt4 packages (deprecated)")
+	message(STATUS "Using Qt4 packages (deprecated)")
 else ()
-    message(STATUS "No suitable Qt packages found")
+	message(STATUS "No suitable Qt packages found")
 endif ()
 
 # add special flag to GCC compiler when using Qt 4.6.x with GCC >4.6
@@ -204,23 +204,23 @@ find_package( OpenGL REQUIRED)
 
 # Find OpenSceneGraph
 find_package( OpenSceneGraph COMPONENTS
-	osgGA
-	osgUtil
-	OpenThreads
-	osg
-	osgAnimation
-	osgDB
-	osgFX
-	#osgIntrospection
-	osgManipulator
-	osgParticle
-	osgShadow
-	osgSim
-	osgTerrain
-	osgText
-	osgVolume
-	osgWidget
-)
+		osgGA
+		osgUtil
+		OpenThreads
+		osg
+		osgAnimation
+		osgDB
+		osgFX
+		#osgIntrospection
+		osgManipulator
+		osgParticle
+		osgShadow
+		osgSim
+		osgTerrain
+		osgText
+		osgVolume
+		osgWidget
+		)
 
 message( STATUS "Using OpenSceneGraph version: " ${OPENSCENEGRAPH_VERSION} )
 
@@ -237,9 +237,9 @@ endif( )
 find_package( osgViewer )
 
 list( APPEND ALL_SYSTEM_HEADERS
-	${OPENSCENEGRAPH_INCLUDE_DIRS}
-	${OSGVIEWER_INCLUDE_DIR}
-)
+		${OPENSCENEGRAPH_INCLUDE_DIRS}
+		${OSGVIEWER_INCLUDE_DIR}
+		)
 
 if( MSVC )
 	list( APPEND ALL_COMPILE_DEFINITIONS -DOSG_LIBRARY_STATIC )
@@ -290,7 +290,7 @@ if (NOT SKIP_OPENNI2)
 
 		list(APPEND ALL_COMPILE_DEFINITIONS -DOPENNI2_FOUND)
 
-		message(STATUS "OpenNI2 Found:")
+		message(STATUS "OpenNI2 Found:" ${OPENNI2_VERSION})
 		message(STATUS "OPENNI2_INCLUDE_DIRS=${OPENNI2_INCLUDE_DIRS}")
 		message(STATUS "OPENNI2_LIBRARIES=${OPENNI2_LIBRARIES}")
 	elseif (SKIP_OPENNI2)
@@ -313,7 +313,7 @@ if (NOT SKIP_NITE2)
 		list(APPEND ALL_SYSTEM_HEADERS ${NITE2_INCLUDE_DIRS} ${NITE2_OPENNI2_DRIVER_DIRS})
 
 		list(APPEND ALL_COMPILE_DEFINITIONS -DNITE2_FOUND)
-		message(STATUS "NITE2 Found:")
+		message(STATUS "NITE2 Found:"${NITE2_VERSION})
 		message(STATUS "NITE2_INCLUDE_DIRS=${NITE2_INCLUDE_DIRS}")
 		message(STATUS "NITE2_LIBRARIES=${NITE2_LIBRARIES}")
 	elseif (SKIP_NITE2)
@@ -337,7 +337,7 @@ if (NOT SKIP_FREENECT2)
 		list(APPEND ALL_SYSTEM_HEADERS ${FREENECT2_INCLUDE_DIRS})
 		list(APPEND ALL_COMPILE_DEFINITIONS -DFREENECT2_FOUND)
 
-		message(STATUS "FREENECT2 Found:")
+		message(STATUS "FREENECT2 Found:"${FREENECT2_VERSION})
 		message(STATUS "FREENECT2_INCLUDE_DIRS=${FREENECT2_INCLUDE_DIRS}")
 		message(STATUS "FREENECT2_LIBRARIES=${FREENECT2_LIBRARIES}")
 	elseif (SKIP_FREENECT2)
@@ -372,7 +372,7 @@ if (WIN32 AND MSVC)
 			# message ( STATUS "SPEECHSDK NOT FOUND" )
 			# endif()
 
-			message(STATUS "KINECTSDK Found:")
+			message(STATUS "KINECTSDK Found:"${KINECTSDK_VERSION})
 			message(STATUS "KINECTSDK_INCLUDE_DIRS=${KINECTSDK_INCLUDE_DIRS}")
 			message(STATUS "KINECTSDK_LIBRARIES=${KINECTSDK_LIBRARIES}")
 		elseif (SKIP_KINECT_SDK)
@@ -411,7 +411,7 @@ if (NOT SKIP_LEAP)
 		list(APPEND ALL_COMPILE_DEFINITIONS -DLEAP_FOUND)
 		list(APPEND ALL_SYSTEM_HEADERS ${LEAP_INCLUDE_DIRS})
 
-		message(STATUS "LEAP Found:")
+		message(STATUS "LEAP Found:"${LEAP_VERSION})
 		message(STATUS "LEAP_INCLUDE_DIRS=${LEAP_INCLUDE_DIRS}")
 		message(STATUS "LEAP_LIB_DIR=${LEAP_LIBRARIES}")
 	else ()
@@ -696,7 +696,7 @@ if( USE_BUILTIN_DEPENDENCIES )
 	set( CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${DEP_BIN}/lib ${DEP_BIN}/bin )
 	set( CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${DEP_BIN}/include )
 
-        add_subdirectory(dependencies)
+	add_subdirectory(dependencies)
 
 else()
 	message(STATUS "Skipped using builtin external dependencies.")
@@ -757,51 +757,51 @@ file ( GLOB_RECURSE SRC_HANDMODULE "src/Leap/HandModule/*.cpp" )
 
 # MOUSE3D
 set ( SRC_MOUSE3D
-	src/Mouse3d/Connector.cpp
-	src/Mouse3d/LibMouse3d/EventThread.cpp
-	src/Mouse3d/LibMouse3d/Mouse3dDevices.cpp
-)
+		src/Mouse3d/Connector.cpp
+		src/Mouse3d/LibMouse3d/EventThread.cpp
+		src/Mouse3d/LibMouse3d/Mouse3dDevices.cpp
+		)
 
 if( WIN32 )
 	list(APPEND SRC_MOUSE3D
-		src/Mouse3d/LibMouse3d/Windows/Mouse3DInput.cpp
-		src/Mouse3d/LibMouse3d/Windows/MouseParameters.cpp
-		)
+			src/Mouse3d/LibMouse3d/Windows/Mouse3DInput.cpp
+			src/Mouse3d/LibMouse3d/Windows/MouseParameters.cpp
+			)
 elseif( APPLE )
 	list(APPEND SRC_MOUSE3D
-		src/Mouse3d/LibMouse3d/Mac/Mouse3dMacDevice.cpp
-		)
+			src/Mouse3d/LibMouse3d/Mac/Mouse3dMacDevice.cpp
+			)
 elseif( UNIX )
 	list(APPEND SRC_MOUSE3D
-		src/Mouse3d/LibMouse3d/Unix/ApplicationEmitter.cpp
-		src/Mouse3d/LibMouse3d/Unix/Mouse3dUnixDevice.cpp
-		)
+			src/Mouse3d/LibMouse3d/Unix/ApplicationEmitter.cpp
+			src/Mouse3d/LibMouse3d/Unix/Mouse3dUnixDevice.cpp
+			)
 endif()
 
 # All source files
 set( SRC
-	${SRC_APP}
-	${SRC_CORE}
-	${SRC_MANAGER}
-	${SRC_DATA}
-	${SRC_CLUSTERING}
-	${SRC_IMPORTER}
-	${SRC_LAYOUT}
-	${SRC_LUAGRAPH}
-	${SRC_LUAINTERFACE}
-	${SRC_LUATYPES}
-	${SRC_MATH}
-	${SRC_NETWORK}
-	${SRC_MODEL}
-	${SRC_OSGQTBROWSER}
-	${SRC_QOSG}
-	${SRC_VIEWER}
-	${SRC_UTIL}
-	${SRC_REPOSITORY}
-	${SRC_SPECIALMATRIX}
-	${SRC_CITY}
-	${SRC_SHAPES}
-)
+		${SRC_APP}
+		${SRC_CORE}
+		${SRC_MANAGER}
+		${SRC_DATA}
+		${SRC_CLUSTERING}
+		${SRC_IMPORTER}
+		${SRC_LAYOUT}
+		${SRC_LUAGRAPH}
+		${SRC_LUAINTERFACE}
+		${SRC_LUATYPES}
+		${SRC_MATH}
+		${SRC_NETWORK}
+		${SRC_MODEL}
+		${SRC_OSGQTBROWSER}
+		${SRC_QOSG}
+		${SRC_VIEWER}
+		${SRC_UTIL}
+		${SRC_REPOSITORY}
+		${SRC_SPECIALMATRIX}
+		${SRC_CITY}
+		${SRC_SHAPES}
+		)
 
 if( OpenCV_FOUND )
 	list( APPEND SRC ${SRC_OPENCV} ${SRC_QOPENCV} ${SRC_ARUCO} )
@@ -824,8 +824,8 @@ endif()
 # add Leap
 if( LEAP_FOUND )
 	# WORKAROUND GARAJ comment
-		list( APPEND SRC ${SRC_LEAP} )
-		list( APPEND SRC ${SRC_HANDMODULE} )
+	list( APPEND SRC ${SRC_LEAP} )
+	list( APPEND SRC ${SRC_HANDMODULE} )
 endif()
 
 # add MOUSE3D if found
@@ -889,52 +889,52 @@ file( GLOB_RECURSE HEADER_HANDMODULE	"include/Leap/HandModule/*.h" )
 
 # MOUSE3D
 set ( HEADER_MOUSE3D
-	include/Mouse3d/Connector.h
-	include/Mouse3d/LibMouse3d/EventThread.h
-	include/Mouse3d/LibMouse3d/Mouse3dDevices.h
-)
+		include/Mouse3d/Connector.h
+		include/Mouse3d/LibMouse3d/EventThread.h
+		include/Mouse3d/LibMouse3d/Mouse3dDevices.h
+		)
 
 if( WIN32 )
 	list(APPEND HEADER_MOUSE3D
-		include/Mouse3d/LibMouse3d/Windows/Mouse3DInput.h
-		include/Mouse3d/LibMouse3d/Windows/MouseParameters.h
-		include/Mouse3d/LibMouse3d/Windows/I3dMouseParams.h
-		)
+			include/Mouse3d/LibMouse3d/Windows/Mouse3DInput.h
+			include/Mouse3d/LibMouse3d/Windows/MouseParameters.h
+			include/Mouse3d/LibMouse3d/Windows/I3dMouseParams.h
+			)
 elseif( APPLE )
 	list(APPEND HEADER_MOUSE3D
-		include/Mouse3d/LibMouse3d/Mac/Mouse3dMacDevice.h
-		)
+			include/Mouse3d/LibMouse3d/Mac/Mouse3dMacDevice.h
+			)
 elseif( UNIX )
 	list(APPEND HEADER_MOUSE3D
-		include/Mouse3d/LibMouse3d/Unix/ApplicationEmitter.h
-		include/Mouse3d/LibMouse3d/Unix/Mouse3dUnixDevice.h
-		)
+			include/Mouse3d/LibMouse3d/Unix/ApplicationEmitter.h
+			include/Mouse3d/LibMouse3d/Unix/Mouse3dUnixDevice.h
+			)
 endif()
 
 # All header files
 set( INCL
-	${HEADER_APP}
-	${HEADER_CORE}
-	${HEADER_MANAGER}
-	${HEADER_DATA}
-	${HEADER_CLUSTERING}
-	${HEADER_IMPORTER}
-	${HEADER_LAYOUT}
-	${HEADER_LUAGRAPH}
-	${HEADER_LUAINTERFACE}
-	${HEADER_LUATYPES}
-	${HEADER_MATH}
-	${HEADER_NETWORK}
-	${HEADER_MODEL}
-	${HEADER_OSGQTBROWSER}
-	${HEADER_QOSG}
-	${HEADER_VIEWER}
-	${HEADER_UTIL}
-	${HEADER_REPOSITORY}
-	${HEADER_SPECIALMATRIX}
-	${HEADER_CITY}
-	${HEADER_SHAPES}
-)
+		${HEADER_APP}
+		${HEADER_CORE}
+		${HEADER_MANAGER}
+		${HEADER_DATA}
+		${HEADER_CLUSTERING}
+		${HEADER_IMPORTER}
+		${HEADER_LAYOUT}
+		${HEADER_LUAGRAPH}
+		${HEADER_LUAINTERFACE}
+		${HEADER_LUATYPES}
+		${HEADER_MATH}
+		${HEADER_NETWORK}
+		${HEADER_MODEL}
+		${HEADER_OSGQTBROWSER}
+		${HEADER_QOSG}
+		${HEADER_VIEWER}
+		${HEADER_UTIL}
+		${HEADER_REPOSITORY}
+		${HEADER_SPECIALMATRIX}
+		${HEADER_CITY}
+		${HEADER_SHAPES}
+		)
 
 if( OpenCV_FOUND )
 	list( APPEND INCL ${HEADER_OPENCV} ${HEADER_QOPENCV} ${HEADER_ARUCO} )
@@ -956,8 +956,8 @@ endif()
 
 # LEAP
 if( LEAP_FOUND )
-		list( APPEND INCL ${HEADER_LEAP} )
-		list( APPEND INCL ${HEADER_HANDMODULE} )
+	list( APPEND INCL ${HEADER_LEAP} )
+	list( APPEND INCL ${HEADER_HANDMODULE} )
 endif()
 
 # MOUSE3D
@@ -1084,10 +1084,10 @@ target_include_directories( parserlib SYSTEM PUBLIC dependencies/parserlib/sourc
 add_library( gitlib STATIC ${SRC_GITLIB} ${HEADER_GITLIB})
 
 target_include_directories( gitlib
-	SYSTEM PUBLIC
-	include
-	include/Repository/Git
-)
+		SYSTEM PUBLIC
+		include
+		include/Repository/Git
+		)
 
 target_compile_definitions( gitlib PUBLIC -DGITLIB_LIBRARY_STATIC )
 
@@ -1109,13 +1109,13 @@ endif()
 
 #-------------------------------- leap module -------------------------------
 if( LEAP_FOUND )
-		add_library( leaplib STATIC ${SRC_LEAPLIB} ${HEADER_LEAPLIB})
+	add_library( leaplib STATIC ${SRC_LEAPLIB} ${HEADER_LEAPLIB})
 
 	target_include_directories( leaplib
-		SYSTEM PUBLIC
-		include
-		include/Leap
-		)
+			SYSTEM PUBLIC
+			include
+			include/Leap
+			)
 
 	target_compile_definitions( leaplib PUBLIC -DLEAPLIB_LIBRARY_STATIC )
 
@@ -1131,7 +1131,7 @@ if( LEAP_FOUND )
 	if( COMMAND cotire )
 		# link leaplib_unity target to all libraries to which leaplib links
 		set_target_properties( leaplib PROPERTIES COTIRE_UNITY_LINK_LIBRARIES_INIT "COPY_UNITY" )
-			set_target_properties(leaplib PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+		set_target_properties(leaplib PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 		cotire( leaplib CONFIGURATIONS Debug Release )
 	endif()
 endif()
@@ -1147,8 +1147,8 @@ add_library( ${3DSOFTVIZ_NAME} STATIC ${INCL}  ${SRC} )
 target_compile_options( ${3DSOFTVIZ_NAME} PUBLIC ${FLAGS_FOR_DEBUG} )
 
 target_compile_definitions( ${3DSOFTVIZ_NAME}
-	PUBLIC ${ALL_COMPILE_DEFINITIONS}
-)
+		PUBLIC ${ALL_COMPILE_DEFINITIONS}
+		)
 
 if( OpenCV_FOUND )
 	list( APPEND ALL_SYSTEM_HEADERS ${DEPENDENCIES_INCLUDE_DIR}/aruco )
@@ -1179,15 +1179,15 @@ include_directories(SYSTEM ${ALL_SYSTEM_HEADERS})
 
 if ( Qt5Core_FOUND )
 	target_link_libraries( ${3DSOFTVIZ_NAME}
-		Qt5::Core Qt5::Gui Qt5::Widgets Qt5::OpenGL Qt5::Sql Qt5::WebEngine Qt5::WebEngineWidgets Qt5::Xml Qt5::Network
-		${OPENGL_LIBRARIES} )
+			Qt5::Core Qt5::Gui Qt5::Widgets Qt5::OpenGL Qt5::Sql Qt5::WebEngine Qt5::WebEngineWidgets Qt5::Xml Qt5::Network
+			${OPENGL_LIBRARIES} )
 endif()
 
 if ( Qt4_FOUND )
-#	target_link_libraries( ${3DSOFTVIZ_NAME} ${QT_LIBRARIES} )
+	#	target_link_libraries( ${3DSOFTVIZ_NAME} ${QT_LIBRARIES} )
 	target_link_libraries( ${3DSOFTVIZ_NAME}
-		Qt4::QtCore Qt4::QtGui Qt4::QtOpenGL Qt4::QtSql Qt4::QtWebKit Qt4::QtXml Qt4::QtNetwork
-		${OPENGL_LIBRARIES} )
+			Qt4::QtCore Qt4::QtGui Qt4::QtOpenGL Qt4::QtSql Qt4::QtWebKit Qt4::QtXml Qt4::QtNetwork
+			${OPENGL_LIBRARIES} )
 endif()
 
 if( BUILD_OSGQT )
@@ -1197,16 +1197,16 @@ else()
 endif()
 
 target_link_libraries( ${3DSOFTVIZ_NAME}
-	gitlib
-	lua
-	noiseutils
-	libnoise
-	osgModeling
-	qtcolorpicker
-	parserlib
-	${OPENSCENEGRAPH_LIBRARIES}
-	${OSGVIEWER_LIBRARIES}
-)
+		gitlib
+		lua
+		noiseutils
+		libnoise
+		osgModeling
+		qtcolorpicker
+		parserlib
+		${OPENSCENEGRAPH_LIBRARIES}
+		${OSGVIEWER_LIBRARIES}
+		)
 
 if( UNIX AND NOT APPLE )
 	target_link_libraries( ${3DSOFTVIZ_NAME} mouse3d )
@@ -1265,7 +1265,7 @@ endif()
 if( COMMAND cotire )
 	# link ${3DSOFTVIZ_NAME}_unity target to all libraries to which ${3DSOFTVIZ_NAME} links
 	set_target_properties( ${3DSOFTVIZ_NAME} PROPERTIES COTIRE_UNITY_LINK_LIBRARIES_INIT "COPY_UNITY" )
-		set_target_properties(${3DSOFTVIZ_NAME} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
+	set_target_properties(${3DSOFTVIZ_NAME} PROPERTIES COTIRE_ENABLE_PRECOMPILED_HEADER FALSE)
 
 	cotire( ${3DSOFTVIZ_NAME} CONFIGURATIONS Debug Release )
 
@@ -1375,17 +1375,17 @@ endif()
 
 # 3DSoftviz and data
 install( TARGETS ${3DSOFTVIZ_NAME}_app
-	BUNDLE DESTINATION ${INSTALL_BUNDLE} COMPONENT Runtime
-	RUNTIME DESTINATION ${INSTALL_BIN} COMPONENT Runtime )
+		BUNDLE DESTINATION ${INSTALL_BUNDLE} COMPONENT Runtime
+		RUNTIME DESTINATION ${INSTALL_BIN} COMPONENT Runtime )
 
 install( TARGETS gitlib
-	ARCHIVE DESTINATION ${INSTALL_BIN} COMPONENT Runtime
-	LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime )
+		ARCHIVE DESTINATION ${INSTALL_BIN} COMPONENT Runtime
+		LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime )
 
 if( LEAP_FOUND )
 	install( TARGETS leaplib
-		ARCHIVE DESTINATION ${INSTALL_BIN} COMPONENT Runtime
-		LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime )
+			ARCHIVE DESTINATION ${INSTALL_BIN} COMPONENT Runtime
+			LIBRARY DESTINATION ${INSTALL_LIB} COMPONENT Runtime )
 endif()
 
 # add custom install_unity target
@@ -1393,9 +1393,9 @@ if( COMMAND cotire )
 	install(TARGETS ${3DSOFTVIZ_NAME}_app_unity RUNTIME DESTINATION ${INSTALL_BIN} )
 
 	add_custom_target( install_unity
-		COMMAND ${CMAKE_COMMAND} -P "cmake_install.cmake"
-		COMMENT "Install the unity-built project..."
-		WORKING_DIRECTORY ${CMAKE_BINARY_DIR} )
+			COMMAND ${CMAKE_COMMAND} -P "cmake_install.cmake"
+			COMMENT "Install the unity-built project..."
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR} )
 	add_dependencies( install_unity ${3DSOFTVIZ_NAME}_app_unity )
 	add_dependencies( install_unity gitlib_unity )
 	if( LEAP_FOUND )
@@ -1447,10 +1447,10 @@ endif()
 if( USE_BUILTIN_DEPENDENCIES )
 	# Install all dependencies
 	install( DIRECTORY ${DEP_BIN}/
-		DESTINATION ${INSTALL_DEPS}
-		COMPONENT Dependencies
-		USE_SOURCE_PERMISSIONS
-		)
+			DESTINATION ${INSTALL_DEPS}
+			COMPONENT Dependencies
+			USE_SOURCE_PERMISSIONS
+			)
 endif()
 
 # Include QT libraries in Apple bundle and on Windows
@@ -1459,8 +1459,8 @@ if( WIN32 OR APPLE AND OSX_BUNDLE )
 	if( APPLE AND OSX_BUNDLE )
 		# Install Qt Plugins
 		install( DIRECTORY "${QT_PLUGINS_DIR}/imageformats"
-			DESTINATION ${INSTALL_PLUGIN}/plugins
-			COMPONENT Runtime )
+				DESTINATION ${INSTALL_PLUGIN}/plugins
+				COMPONENT Runtime )
 
 		# Install Qt Config
 		install( CODE "
@@ -1576,11 +1576,11 @@ add_executable( test_gitlib_module ${TEST_RUNNER} ${SRC_GITLIB_TESTS} )
 add_dependencies( test_gitlib_module igloo )
 
 target_include_directories( test_gitlib_module 	PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR}/include
-	include/Repository/Git 	)
+		${CMAKE_CURRENT_SOURCE_DIR}/include
+		include/Repository/Git 	)
 target_compile_options( test_gitlib_module PUBLIC ${FLAGS_FOR_DEBUG} )
 if ( Qt5Core_FOUND )
-#	qt5_use_modules( test_gitlib_module Core )
+	#	qt5_use_modules( test_gitlib_module Core )
 	target_link_libraries( test_gitlib_module Qt5::Core gitlib )
 elseif( Qt4_FOUND )
 	target_link_libraries( test_gitlib_module ${QT_LIBRARIES} gitlib )
