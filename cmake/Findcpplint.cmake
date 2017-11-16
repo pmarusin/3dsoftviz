@@ -2,14 +2,11 @@
 find_package(PythonInterp)
 
 find_file(CPPLINT_SCRIPT
-<<<<<<< HEAD
-	NAMES cpplint.py cpplint.exe
-	PATHS 
-		c:/Python27/Scripts
-=======
+
 	NAMES cpplint.py cpplint cpplint.exe
 	PATHS
->>>>>>> hotfix/linux
+		/bin
+		/usr/bin
 		/usr/local/bin
 		c:/Python27/Scripts
 )

@@ -15,12 +15,14 @@ class KinectThread;
 
 namespace QOpenCV {
 class FaceRecognitionThread;
-class MarkerlessTrackingThread;
+class LightDetectionThread;
 //class FaceRecognitionWindow;
 class OpenCVWindow;
 }
+
 namespace OpenCV {
 class FaceRecognizer;
+class LightDetector;
 }
 
 namespace OpenCV {
@@ -54,7 +56,6 @@ public:
 		 */
 	void opencvInit();
 
-
 private:
 	/**
 		 * @author Autor: David Durcak
@@ -76,12 +77,6 @@ private:
 	void createConnectionFaceRec();
 
 	/**
-		 * @author Autor: Lukas Hagara
-		 * @brief createConnectionMarkerless Create connection for controlling Markerless Tracking thread from Face/Marker detection window
-		 */
-	void createConnectionMarkerless();
-
-	/**
 		 * @author Autor: David Durcak
 		 * @brief createConnectionAruco Create conections for cotrollig Aruco thread from Face Detection window
 		 */
@@ -100,6 +95,12 @@ private:
 		 */
 	void createConnectionKinect();
 
+	/**
+		 * @author Autor: Marek Karas
+		 * @brief createConnectionLightDet Create conections for cotrollig Light Detection thread from OpenCVWindow
+		 */
+	void createConnectionLightDet();
+
 
 	static OpenCVCore*	mOpenCVCore;	// static singleton instance
 	bool				mArucoThrsCreated;	// if false, threads were not initialized yet
@@ -109,7 +110,7 @@ private:
 	QApplication*					mApp;
 	ArucoModul::ArucoThread*			mThrAruco;
 	QOpenCV::FaceRecognitionThread*	mThrFaceRec;
-	QOpenCV::MarkerlessTrackingThread* mThrMarkerless;
+	QOpenCV::LightDetectionThread* mThrLightDet;
 	Kinect::KinectThread* mThrKinect;
 	//QPointer<QOpenCV::FaceRecognitionWindow> mOpencvDialog;
 	QPointer<QOpenCV::OpenCVWindow> mOpencvWindow;

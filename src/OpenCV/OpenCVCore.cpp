@@ -3,11 +3,12 @@
 #include <opencv2/core/core.hpp>
 
 #include "Core/Core.h"
-#include "Aruco/arucothread.h"
+#include "Aruco/ArucoThread.h"
 #include "Kinect/KinectThread.h"
 #include "QOpenCV/FaceRecognitionThread.h"
 #include "QOpenCV/FaceRecognitionWindow.h"
-#include "QOpenCV/MarkerlessTrackingThread.h"
+#include "OpenCV/TrackedLight.h"
+#include "QOpenCV/LightDetectionThread.h"
 #include "QOpenCV/OpenCVWindow.h"
 #include "Viewer/CameraManipulator.h"
 #include "OpenCV/CamSelectCore.h"
@@ -29,7 +30,7 @@ OpenCV::OpenCVCore::OpenCVCore( QApplication* app, QWidget* parent )
 	mKinectThrsCreated = false;
 	mOpencvWindow   =  nullptr;
 	mThrFaceRec		=  nullptr;
-	mThrMarkerless	=  nullptr;
+	mThrLightDet	=  nullptr;
 	mThrAruco		=  nullptr;
 	mThrKinect      =  nullptr;
 
@@ -38,13 +39,14 @@ OpenCV::OpenCVCore::OpenCVCore( QApplication* app, QWidget* parent )
 OpenCV::OpenCVCore::~OpenCVCore( void )
 {
 	if ( mArucoThrsCreated ) {
+		if ( mThrLightDet != NULL ) {
+			mThrLightDet->setCancel( true );
+			mThrLightDet->setSendImgEnabled( false );
+		}
+
 		if ( mThrFaceRec != NULL ) {
 			mThrFaceRec->setCancel( true );
 			mThrFaceRec->setSendImgEnabled( false );
-		}
-
-		if ( mThrMarkerless != NULL ) {
-			mThrMarkerless->setCancel( true );
 		}
 
 		if ( mThrAruco != NULL ) {
@@ -57,14 +59,14 @@ OpenCV::OpenCVCore::~OpenCVCore( void )
 			mOpencvWindow->deleteLater();
 		}
 
+		if ( mThrLightDet != NULL ) {
+			mThrLightDet->wait();
+			mThrLightDet->deleteLater();
+		}
+
 		if ( mThrFaceRec != NULL ) {
 			mThrFaceRec->wait();
 			mThrFaceRec->deleteLater();
-		}
-
-		if ( mThrMarkerless != NULL ) {
-			mThrMarkerless->wait();
-			mThrMarkerless->deleteLater();
 		}
 
 		if ( mThrAruco != NULL ) {
@@ -83,7 +85,7 @@ void OpenCV::OpenCVCore::opencvInit()
 		mArucoThrsCreated = true;
 		mThrAruco = new ArucoModul::ArucoThread();
 		mThrFaceRec	= new QOpenCV::FaceRecognitionThread();
-		mThrMarkerless = new QOpenCV::MarkerlessTrackingThread();
+		mThrLightDet = new QOpenCV::LightDetectionThread();
 
 #ifdef OPENNI2_FOUND
 		mThrKinect = new Kinect::KinectThread();
@@ -98,8 +100,8 @@ void OpenCV::OpenCVCore::opencvInit()
 		mOpencvWindow =  new QOpenCV::OpenCVWindow( mParent, mApp );
 	}
 
+	createConnectionLightDet();
 	createConnectionFaceRec();
-	createConnectionMarkerless();
 	createConnectionAruco();
 
 #ifdef OPENNI2_FOUND
@@ -124,7 +126,7 @@ void  OpenCV::OpenCVCore::createPermanentConnection()
 	QObject::connect( mThrFaceRec,
 					  SIGNAL( sendEyesRealCoords( float,float,float ) ),
 					  projectiveARCore->getViewer(),
-					  SLOT( setViewerPosByFaceDetection( float,float,float ) ) );
+					  SLOT( setViewerPosByFaceDetection( double,double,double ) ) );
 
 	//  sending result data from aruco - M.Garaj(TP) first ArUco try
 	/*QObject::connect( mThrAruco,
@@ -153,18 +155,31 @@ void  OpenCV::OpenCVCore::createPermanentConnection()
 
 	// updating background image
 	QObject::connect( mThrFaceRec,
-					  SIGNAL( pushBackgrImage( cv::Mat ) ),
+					  SIGNAL( pushBackgrImage( cv::Mat, bool ) ),
 					  AppCore::Core::getInstance( mApp )->getCoreGraph()->getCameraStream(),
-					  SLOT( updateBackgroundImage( cv::Mat ) ) );
+					  SLOT( updateBackgroundImage( cv::Mat, bool ) ) );
+
+
 	QObject::connect( mThrAruco,
-					  SIGNAL( pushBackgrImage( cv::Mat ) ),
+					  SIGNAL( pushBackgrImage( cv::Mat, bool ) ),
 					  AppCore::Core::getInstance( mApp )->getCoreGraph()->getCameraStream(),
-					  SLOT( updateBackgroundImage( cv::Mat ) ) );
+					  SLOT( updateBackgroundImage( cv::Mat, bool ) ) );
 
 	QObject::connect( mThrAruco,
 					  SIGNAL( moveMouseArucoSignal( double,double,bool,Qt::MouseButton ) ),
 					  AppCore::Core::getInstance()->getCoreWindow(),
 					  SLOT( moveMouseAruco( double,double,bool,Qt::MouseButton ) ) );
+
+	// updating lights
+	QObject::connect( mThrLightDet,
+					  SIGNAL( sendLightCoords( OpenCV::TrackedLight ) ),
+					  AppCore::Core::getInstance( mApp )->getCoreGraph(),
+					  SLOT( setLightCoords( OpenCV::TrackedLight ) ) );
+
+	QObject::connect( mThrLightDet,
+					  SIGNAL( sendAmbientLightColor( osg::Vec4 ) ),
+					  AppCore::Core::getInstance( mApp )->getCoreGraph(),
+					  SLOT( setAmbientLightColor( osg::Vec4 ) ) );
 
 }
 
@@ -218,6 +233,12 @@ void OpenCV::OpenCVCore::createConnectionKinect()
 					  SIGNAL( sendSpeedKinect( double ) ),
 					  mThrKinect,
 					  SLOT( setSpeedKinect( double ) ) );
+
+	//enable/disable markerless tracking
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setKinectMarkerlessDetection( bool ) ),
+					  mThrKinect,
+					  SLOT( setMarkerlessTracking( bool ) ) );
 
 	//edit for speed movement
 	QObject::connect( mOpencvWindow,
@@ -290,32 +311,13 @@ void OpenCV::OpenCVCore::createConnectionFaceRec()
 					  SLOT( setCapVideo( OpenCV::CapVideo* ) ) );
 }
 
-void OpenCV::OpenCVCore::createConnectionMarkerless()
-{
-	QObject::connect( mOpencvWindow,
-					  SIGNAL( startMarkerless() ),
-					  mThrMarkerless,
-					  SLOT( start() ) );
-	QObject::connect( mOpencvWindow,
-					  SIGNAL( stopMarkerless( bool ) ),
-					  mThrMarkerless,
-					  SLOT( setCancel( bool ) ) );
-	QObject::connect( mThrMarkerless,
-					  SIGNAL( finished() ),
-					  mOpencvWindow,
-					  SLOT( onMarkerlessThreadFinished() ) );
-	QObject::connect( mOpencvWindow,
-					  SIGNAL( setCapVideoMarkerless( OpenCV::CapVideo* ) ),
-					  mThrMarkerless,
-					  SLOT( setCapVideo( OpenCV::CapVideo* ) ) );
-	QObject::connect( mThrMarkerless,
-					  SIGNAL( pushImage( cv::Mat ) ),
-					  mOpencvWindow,
-					  SLOT( setLabel( cv::Mat ) ) );
-}
-
 void OpenCV::OpenCVCore::createConnectionAruco()
 {
+	//JMA AR GRAPH ZOOMING
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setArGraphZoom( int ) ),
+					  AppCore::Core::getInstance( mApp )->getCoreGraph(),
+					  SLOT( onSetGraphZoom( int ) ) );
 	// send actual image
 	QObject::connect( mOpencvWindow,
 					  SIGNAL( sendImgMarker( bool ) ),
@@ -336,6 +338,12 @@ void OpenCV::OpenCVCore::createConnectionAruco()
 					  SIGNAL( sendBackgrImgMarker( bool ) ),
 					  mThrAruco,
 					  SLOT( setSendBackgrImgEnabled( bool ) ) );
+
+	//request recalibration
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendRecalibrateHand() ),
+					  AppCore::Core::getInstance( mApp )->getCoreGraph()->getCameraStream(),
+					  SLOT( requestCalibration( ) ) );
 
 	// start, stop
 	QObject::connect( mOpencvWindow,
@@ -396,6 +404,10 @@ void OpenCV::OpenCVCore::createConnectionAruco()
 					  SIGNAL( setMultiMarker( bool ) ),
 					  mThrAruco,
 					  SLOT( setMultiMarker( bool ) ) );
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setCameraMarkerlessDetection( bool ) ),
+					  mThrAruco,
+					  SLOT( setMarkerlessTracking( bool ) ) );
 
 	// aruco mouse Controll
 	QObject::connect( mOpencvWindow->getInterchangeMarkersPB(),
@@ -403,6 +415,16 @@ void OpenCV::OpenCVCore::createConnectionAruco()
 					  mThrAruco,
 					  SLOT( interchangeMarkers() ) );
 
+
+	// ar interaction node selection / behviour connects
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setArInteractionSelection( int ) ),
+					  mThrAruco,
+					  SLOT( setArInteractionSelection( int ) ) );
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setArInteractionBehaviour( int ) ),
+					  mThrAruco,
+					  SLOT( setArInteractionBehaviour( int ) ) );
 }
 
 void OpenCV::OpenCVCore::createConnectionMultiAruco()
@@ -425,6 +447,74 @@ void OpenCV::OpenCVCore::createConnectionMultiAruco()
 					  SIGNAL( pushImagemMat( cv::Mat ) ),
 					  mOpencvWindow,
 					  SLOT( setLabel( cv::Mat ) ) );
+}
+
+void OpenCV::OpenCVCore::createConnectionLightDet()
+{
+	// send actual image
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendImgLightDet( bool ) ),
+					  mThrLightDet,
+					  SLOT( setSendImgEnabled( bool ) ) );
+	QObject::connect( mThrLightDet,
+					  SIGNAL( pushImage( cv::Mat ) ),
+					  mOpencvWindow,
+					  SLOT( setLabel( cv::Mat ) ) );
+	// send actual image to background
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendBackgrImgLightDet( bool ) ),
+					  mThrLightDet,
+					  SLOT( setSendBackgrImgEnabled( bool ) ) );
+
+
+	// start, stop
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( startLightDet() ),
+					  mThrLightDet,
+					  SLOT( start() ) );
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( stopLightDet( bool ) ),
+					  mThrLightDet,
+					  SLOT( setCancel( bool ) ) );
+	QObject::connect( mThrLightDet,
+					  SIGNAL( finished() ),
+					  mOpencvWindow,
+					  SLOT( onFaceRecThrFinished() ) );
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( setCapVideoLightDet( OpenCV::CapVideo* ) ),
+					  mThrLightDet,
+					  SLOT( setCapVideo( OpenCV::CapVideo* ) ) );
+
+	// adjusting fisheye calculations
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendFishEyeCenterX( int ) ),
+					  mThrLightDet,
+					  SLOT( setFishEyeCenterX( int ) ) );
+
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendFishEyeCenterY( int ) ),
+					  mThrLightDet,
+					  SLOT( setFishEyeCenterY( int ) ) );
+
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendFishEyeRadius( int ) ),
+					  mThrLightDet,
+					  SLOT( setFishEyeRadius( int ) ) );
+
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendFishEyeAngle( int ) ),
+					  mThrLightDet,
+					  SLOT( setFishEyeAngle( int ) ) );
+
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendShowProcessingCB( bool ) ),
+					  mThrLightDet,
+					  SLOT( setShowProcessing( bool ) ) );
+
+	QObject::connect( mOpencvWindow,
+					  SIGNAL( sendShowLightMarkers( bool ) ),
+					  AppCore::Core::getInstance( mApp )->getCoreGraph(),
+					  SLOT( setShowLightMarkers( bool ) ) );
 }
 
 OpenCV::OpenCVCore* OpenCV::OpenCVCore::getInstance( QApplication* app, QWidget* parent )

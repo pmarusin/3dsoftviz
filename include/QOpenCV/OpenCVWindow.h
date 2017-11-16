@@ -14,6 +14,8 @@
 #include <QSlider>
 #include <QStackedLayout>
 #include <QVBoxLayout>
+#include <QGroupBox>
+#include <qtoolbox.h>
 
 namespace OpenCV {
 class CapVideo;
@@ -77,12 +79,21 @@ public:
 	QPushButton*	getInterchangeMarkersPB() const;
 
 signals:
+
+	/**
+	     * @author Autor: Marek Karas
+	     * @brief sendImgLightDet Signal for enagling or disabling sending actual image from LightDetectionThread
+	     * @param send
+	     */
+	void sendImgLightDet( bool send );
+
 	/**
 	     * @author Autor: David Durcak
 	     * @brief sendImgFaceRec Signal for enagling or disabling sending actual image from FaceDetection thread
 	     * @param send
 	     */
 	void sendImgFaceRec( bool send );
+	void sendRecalibrateHand();
 
 	/**
 	     * @author Autor: David Durcak
@@ -90,6 +101,13 @@ signals:
 	     * @param send
 	     */
 	void sendImgMarker( bool send );
+
+	/**
+	     * @author Autor: Marek Karas
+	     * @brief sendBackgrImgLightDet Signal for enagling or disabling sending actual image from LightDetectionThread to background
+	     * @param send
+	     */
+	void sendBackgrImgLightDet( bool send );
 
 	/**
 	     * @author Autor: David Durcak
@@ -112,19 +130,19 @@ signals:
 	     */
 	void stopMarker( bool set );
 
+	/**
+	     * @author Autor: Marek Karas
+	     * @brief stopLightDet Signal for canceling Light Detection thread
+	     * @param set cancel if true
+	     */
+	void stopLightDet( bool set );
 
 	/**
 	     * @author Autor: David Durcak
-	     * @brief stopFaceRec Signal for canceling FaceDetection thread
+	     * @brief stopFaceRec Signal for canceling LightDetectionThread
 	     * @param set cancel if true
 	     */
 	void stopFaceRec( bool set );
-
-	/**
-		 * @author Lukas Hagara
-		 * @brief stopMarkerless Signal for canceling MarkerlessTracking thread
-		 */
-	void stopMarkerless( bool set );
 
 	/**
 	     * @author Autor: David Durcak
@@ -152,14 +170,14 @@ signals:
 	void startFaceRec();
 
 	/**
-		 * @author Lukas Hagara
-		 * @brief startMarkerless Signal for starting MarkerlessTracking thread
-		 */
-	void startMarkerless();
+	     * @author Autor: Marek Karas
+	     * @brief startLightDet Signal for starting Light Detecton thread
+	     */
+	void startLightDet();
 
 	/**
 	     * @author Autor: Michael Garaj
-	     * @brief setMultiMarker Signal for setting MultiMarker in Aruco thread
+	     * @brief  Signal for setting MultiMarker in Aruco thread
 	     * @param set cancel if true
 	     */
 	void setMultiMarker( bool set );
@@ -172,10 +190,11 @@ signals:
 	void setCapVideoFaceRec( OpenCV::CapVideo* capVideo );
 
 	/**
-		 * @brief setCapVideoMarkerless Signal for setting the camera in MarkerlessTrackingThread
-		 * @param capVideo camera object
-		 */
-	void setCapVideoMarkerless( OpenCV::CapVideo* capVideo );
+	     * @author Autor: Marek Karas
+	     * @brief setCapVideoLightDet Signal for setting camera in LightDetectionThread
+	     * @param capVideo camera object
+	     */
+	void setCapVideoLightDet( OpenCV::CapVideo* capVideo );
 
 	/**
 	     * @author Autor: Michael Garaj
@@ -220,6 +239,18 @@ signals:
 	void setKinectMarkerDetection( bool send );
 
 	/**
+	 * @brief switch markerless detection on kinect
+	 * @param set (on/off)
+	 */
+	void setKinectMarkerlessDetection( bool set );
+
+	/**
+	 * @brief switch markerless detection on camera
+	 * @param set (on/off)
+	 */
+	void setCameraMarkerlessDetection( bool set );
+
+	/**
 	 * @brief change of speed movement for hand
 	 * @param send speed for movement
 	 */
@@ -241,6 +272,49 @@ signals:
 
 	void arucoRunning( bool isRunning );
 
+	/**
+	 * @brief setArInteractionSelection
+	 * @param flag
+	 * @author Juraj Marak
+	 */
+	void setArInteractionSelection( int flag );
+	/**
+	 * @brief setArInteractionBehviour
+	 * @param flag
+	 * @author Juraj Marak
+	 */
+	void setArInteractionBehaviour( int flag );
+
+	/**
+	 * @brief setArGraphZoom
+	 * @param flag
+	 * @author Juraj Marak
+	 */
+	void setArGraphZoom( int flag );
+
+
+	void sendFishEyeCenterX( int value );
+
+	void sendFishEyeCenterY( int value );
+
+	void sendFishEyeRadius( int value );
+
+	void sendFishEyeAngle( int value );
+
+	/**
+	 * @author Autor: Marek Karas
+	 * @brief sendShowProcessingCB Signal to to switch displayed camera stream
+	 * @param set (camera stream/ processing stream)
+	 */
+	void sendShowProcessingCB( bool set );
+
+	/**
+	 * @author Autor: Marek Karas
+	 * @brief sendShowLightMarkers Signal to show markers indicating light position in scene
+	 * @param set markers visible on/of
+	 */
+	void sendShowLightMarkers( bool set );
+
 public slots:
 	/**
 	     * @author Autor: David Durcak
@@ -255,10 +329,10 @@ public slots:
 	void onFaceRecThrFinished();
 
 	/**
-	 * @author Autor: Lukas Hagara
-	 * @brief onMarkerlessThreadFinished When Markerless tracking thread finishes, enable mMarkerlessPB button
-	 */
-	void onMarkerlessThreadFinished();
+	     * @author Autor: Marek Karas
+	     * @brief onLightDetThrFinished When LightDetectionThread finished, enable mLightDetStartCancelPB button
+	     */
+	void onLightDetThrFinished();
 
 	/**
 	     * @author Autor: David Durcak
@@ -300,13 +374,6 @@ private slots:
 	void onKinectStartCancel( bool checked );
 
 	/**
-		 * @author Autor: Lukas Hagara
-		 * @brief onMarkerlessStartCancel Start or stop Markerless Tracking thread
-		 * @param checked If true, thread will start
-		 */
-	void onMarkerlessStartCancel( bool checked );
-
-	/**
 	     * @author Autor: David Durcak
 	     * @brief onUpdateCorPar  Disabling mUpdateCorParPB, until corrections parameter are not updated
 	     */
@@ -318,6 +385,13 @@ private slots:
 	     * @param checked If true, thread will start
 	     */
 	void onFaceRecStartCancel( bool checked );
+
+	/**
+	     * @author Autor: Marek Karas
+	     * @brief onLightDetStartCancel Start or stop LightDetectionThread
+	     * @param checked If true, thread will start
+	     */
+	void onLightDetStartCancel( bool checked );
 
 	/**
 	     * @author Autor: David Durcak
@@ -342,6 +416,8 @@ private slots:
 	     */
 	void onMarkerBackgrCBClicked( bool checked );
 
+	void onmRecalibrateHandPBClicked();
+
 	/**
 	 * @brief private SLOT for turn OFF cursor
 	 */
@@ -360,6 +436,72 @@ private slots:
 	 */
 	void setMarkerDetection( bool set );
 
+	/**
+	 * @brief private SLOT for switching markerless tracking on camera
+	 * @param set (on/off)
+	 */
+	void setMarkerlessDetectionCamera( bool set );
+
+	/**
+	 * @brief private SLOT for switching markerless tracking on kinect
+	 * @param set (on/off)
+	 */
+	void setMarkerlessDetectionKinect( bool set );
+
+	/**
+	 * @brief onArInteractionSelectionClicked
+	 * @param state
+	 * @author Juraj Marak
+	 */
+	void onArInteractionSelectionClicked( bool state );
+	/**
+	 * @brief onArInteractionSelectionClicked
+	 * @param state
+	 * @author Juraj Marak
+	 */
+	void onArInteractionBehaviourClicked( bool state );
+
+	void applyGraphZoomIn( bool state );
+	void applyGraphZoomOut( bool state );
+
+
+	/**
+	* @brief private SLOT for setting up fisheye
+	* @param value X axis offset in pixels
+	*/
+	void onFisheyeXChanged( int value );
+
+	/**
+	* @brief private SLOT for setting up fisheye
+	* @param value Y axis offset in pixels
+	*/
+	void onFisheyeYChanged( int value );
+
+	/**
+	* @brief private SLOT for setting up fisheye
+	* @param value Radius in pixels
+	*/
+	void onFisheyeRChanged( int value );
+
+	/**
+	* @brief private SLOT for setting up fisheye
+	* @param value Fisheye angle in degrees (0..180)
+	*/
+	void onFisheyeAngleChanged( int value );
+
+
+	/**
+	* @brief private SLOT for switching displayed frames
+	* @param set (camera stream/ processing stream)
+	*/
+	void onLightDetShowProcessingCBClicked( bool checked );
+
+	/**
+	 * @brief onEnableLightMarkersCBClicked private slot for switching markers indicating light position
+	 * @param checked marker visibility ( on / off )
+	 */
+	void onEnableLightMarkersCBClicked( bool checked );
+
 private:
 	/**
 	     * @author Autor: Michael Garaj
@@ -377,12 +519,14 @@ private:
 	QApplication*	mApp;
 	QLabel*			mWindowLabel;
 
+
 	QRadioButton*	mKinectRB;
 	QRadioButton*	mArucoRB;
+	QRadioButton*   mArInteractionRB;
 	QRadioButton*    mFaceRecRB;
 	QRadioButton*    mMarkerRB;
+
 	QRadioButton*    mMultiMarkerRB;
-	QRadioButton*	mMarkerlessRB;
 
 	QPushButton*     mFaceRecPB;
 	QPushButton*     mMarkerPB;
@@ -392,22 +536,52 @@ private:
 	QPushButton*		mUpdateCorParPB;
 	QPushButton*		mInterchangeMarkersPB;
 	QPushButton*     mKinectSnapshotPB;
-	QPushButton*	 mMarkerlessPB;
+	QPushButton*		mRecalibrateHandPB;
+	QPushButton*     mLightDetPB;
 
-	QStackedLayout*  mModulesStackL;
-	QStackedLayout*  mSubmodulesStackL;
 
-	QCheckBox*		mNoVideo;
-	QCheckBox*		mMarkerBackgrCB;
-	QCheckBox*		mFaceDetBackgrCB;
-	QCheckBox*		mMarkerBehindCB;
-	QCheckBox*		mCorEnabledCB;
-	QCheckBox*	    mMultiMarkerEnableCB;
+	QVBoxLayout*  mSubmodulesStackL;
+//	---------------------------------------------
+
+	QCheckBox*		mMarkerNoVideo;
+	QCheckBox*		mFaceNoVideo;
+	QCheckBox*		 mMarkerBackgrCB;
+	QCheckBox*		 mFaceDetBackgrCB;
+	QCheckBox*		 mMarkerBehindCB;
+	QCheckBox*		 mCorEnabledCB;
+	QCheckBox*	     mMultiMarkerEnableCB;
+
+	QCheckBox*		 mLightDetectShowProcessingCB;
+	QCheckBox*		 mEnableMarkerlessCameraCB;
+	QCheckBox*		 mRefEnableFaceRecCB;
+	QCheckBox*		 mRefEnableMarkerlessCB;
+
 	QCheckBox*       mDisableCursorCB;
 	QCheckBox*       mDisableZoomCursorCB;
 	QCheckBox*       mEnableMarkerDetectCB;
+	QCheckBox*		 mEnableMarkerlessKinectCB;
 
 	QSlider*         mSpeed;
+
+	//Ar interaction RBs
+	QCheckBox*    mEnableARInteractionCB;
+	QRadioButton* arNSPosition;
+	QRadioButton* arNSNearest;
+	QRadioButton* arNSMostEdges;
+	QRadioButton* arNBSingle;
+	QRadioButton* arNBCluster;
+
+	// fisheye x,y,radius sliders
+	QSlider*		 mFisheyeXS;
+	QSlider*		 mFisheyeYS;
+	QSlider*		 mFisheyeRS;
+	QSlider*		 mFisheyeAngle;
+	QCheckBox*		mLightNoVideo;
+	QCheckBox*		mEnableLightDetCB;
+	QCheckBox*		mEnableLightMarkersCB;
+
+
+	QToolBox*		mToolBox;
 };
 
 }
