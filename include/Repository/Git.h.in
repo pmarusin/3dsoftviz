@@ -1,0 +1,5 @@
+#pragma once
+
+#cmakedefine GIT_COMMIT "@GIT_COMMIT@"
+//find the commit hash using "strings ./3DSoftviz | grep GIT_COMMIT_HASH"
+const char *Git_commit = GIT_COMMIT;
