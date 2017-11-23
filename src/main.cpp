@@ -2,6 +2,7 @@
 
 #include <QApplication>
 
+#include "Repository/Git.h"
 #include "Manager/Manager.h"
 #include "Core/Core.h"
 #include "Util/Cleaner.h"
