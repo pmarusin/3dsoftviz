@@ -7,6 +7,8 @@ option(GIT_INFO "Obtain Git info of the project repo." ON)
 
 if (GIT_INFO)
 
+    option(INCLUDE_GIT_COMMIT_HASH "Embed the latest git commit abbreviated hash into the sources." ON)
+
     find_package(Git REQUIRED)
 
     # Extract git version
