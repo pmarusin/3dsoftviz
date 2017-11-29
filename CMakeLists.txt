@@ -37,6 +37,7 @@ set(CMAKE_CXX_STANDARD 11)
 # Warnings for Debug mode
 option( USE_STRICT_COMPILE_WARNINGS "Use strict compilation warnings in debug mode." ON )
 
+#add git features to build
 include(cmake/Git.cmake)
 
 cmake_policy(SET CMP0054 NEW)

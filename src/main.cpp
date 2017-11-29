@@ -3,7 +3,7 @@
 #include <QApplication>
 
 #ifdef INCLUDE_GIT_COMMIT_HASH
-#include "Repository/Git.h"
+#include "Version.h"
 #endif
 
 #include "Manager/Manager.h"
