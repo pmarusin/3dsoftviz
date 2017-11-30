@@ -60,7 +60,7 @@ if (GIT_INFO)
     set(GIT_COMMIT ${PREFIX}${GIT_COMMIT_HASH}${SUFFIX})
 
     # define ${GIT_COMMIT} in sources so man can recognize the commit of compiled library
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/Version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/Repository/Git.h @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/Version.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/Version.h @ONLY)
     #message(STATUS "Git commit hash: ${GIT_COMMIT_HASH}")
     message(--)
 
