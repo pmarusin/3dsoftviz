@@ -9,6 +9,10 @@ if (GIT_INFO)
 
     option(INCLUDE_GIT_COMMIT_HASH "Embed the latest git commit abbreviated hash into the sources." ON)
 
+    if(INCLUDE_GIT_COMMIT_HASH)
+        add_definitions(-DINCLUDE_GIT_COMMIT_HASH)
+    endif ()
+
     find_package(Git REQUIRED)
 
     # Extract git version
