@@ -2,6 +2,10 @@
 
 #include <QApplication>
 
+#ifdef INCLUDE_GIT_COMMIT_HASH
+#include "Version.h"
+#endif
+
 #include "Manager/Manager.h"
 #include "Core/Core.h"
 #include "Util/Cleaner.h"

@@ -19,7 +19,7 @@ project( 3DSoftviz C CXX )
 cmake_minimum_required( VERSION 2.8.11 )
 
 # ------------------------------------------------------------
-# -------------------3DSoftviz Info
+# ---------------------3DSoftviz Info-------------------------
 # ------------------------------------------------------------
 set( 3DSOFTVIZ_NAME "3DSoftviz" )
 set( 3DSOFTVIZ_LONGNAME "3DSoftviz - Generic 3D graph visualization tool for software visualization" )
@@ -51,6 +51,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Warnings for Debug mode
 option( USE_STRICT_COMPILE_WARNINGS "Use strict compilation warnings in debug mode." ON )
+
+#add git features to build
+include(cmake/Git.cmake)
 
 cmake_policy(SET CMP0054 NEW)
 if( USE_STRICT_COMPILE_WARNINGS )
