@@ -31,8 +31,9 @@ public:
 	HandPalm( float radius = 0.1f, osg::ref_ptr<osg::Group> handsGroup = nullptr, HandColors colorSwitch = HandColors::NONE );
 	/**
 	 * Starts creation of joint hierarchy for fingers and instatiates bones.
+	 * @param type_middle - Value representing the middle finger
 	*/
-	void initStructure();
+	void initStructure( int type_middle = 2 );
 	/**
 	 * Method used in constructor to generate hierarchy of graph objects to visualize a palm.
 	 * Geode -> ShapeDrawable -> Sphere

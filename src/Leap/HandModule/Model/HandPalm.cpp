@@ -10,7 +10,7 @@
 
 #include <easylogging++.h>
 
-const int TYPE_MIDDLE = 2; /*< The middle finger */
+// const int TYPE_MIDDLE = 2; /*< The middle finger */
 const int TYPE_RING = 3; /*< The ring finger */
 const int BONE_COUNT = 4; /*< The ring finger */
 
@@ -29,7 +29,7 @@ Softviz::Leap::HandPalm::HandPalm( float radius, osg::ref_ptr<osg::Group> handsG
 	}
 }
 
-void Softviz::Leap::HandPalm::initStructure()
+void Softviz::Leap::HandPalm::initStructure( int type_middle )
 {
 	QMutexLocker locker( &updateLock );
 
@@ -44,7 +44,7 @@ void Softviz::Leap::HandPalm::initStructure()
 			osg::ref_ptr<osg::Group> fingerBoneGroup = new osg::Group();
 
 			// vynechanie klbov a kosti zapestia stredneho prstu a prstennika
-			if ( i == TYPE_MIDDLE || i == TYPE_RING ) {
+            if ( i == type_middle || i == TYPE_RING ) {
 				Joint* joint = new Joint( 1, i, fingerJointGroup, this->colorSwitch );
 				for ( j = 0; j < BONE_COUNT-1; j++ ) {
 					HandBone* handBone = new HandBone( j, fingerBoneGroup );
